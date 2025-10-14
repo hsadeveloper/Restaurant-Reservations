@@ -14,41 +14,34 @@ import org.springframework.web.bind.annotation.RestController;
 // ============ CONTROLLER ============
 @RestController
 @RequestMapping("/api/reservations")
-@Slf4j
+
 public class ReservationController {
     @Autowired
     private ReservationService reservationService;
-''
+
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(
-            @Valid @RequestBody CreateReservationRequest request) {
-        log.info("Creating reservation for customer: {}", request.getCustomerId());
-        ReservationResponse response = reservationService.createReservation(request);
+    public ResponseEntity<String> createReservation(
+             @RequestBody CreateReservationRequest request) {
+        //log.info("Creating reservation for customer: {}", request.getCustomerId());
+        String response = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/{id}/confirm")
-    public ResponseEntity<ReservationResponse> confirmReservation(
-            @PathVariable Long id,
-            @RequestParam String customerId) {
-        log.info("Confirming reservation: {}", id);
-        ReservationResponse response = reservationService.confirmReservation(id, customerId);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> getReservation(
-            @PathVariable Long id,
-            @RequestParam String customerId) {
-        log.info("Fetching reservation: {}", id);
-        ReservationResponse response = reservationService.getReservation(id, customerId);
-        return ResponseEntity.ok(response);
-    }
-}
-
-// ============ EXCEPTIONS ============
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
+//    @PostMapping("/{id}/confirm")
+//    public ResponseEntity<ReservationResponse> confirmReservation(
+//            @PathVariable Long id,
+//            @RequestParam String customerId) {
+//        log.info("Confirming reservation: {}", id);
+//        ReservationResponse response = reservationService.confirmReservation(id, customerId);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ReservationResponse> getReservation(
+//            @PathVariable Long id,
+//            @RequestParam String customerId) {
+//        log.info("Fetching reservation: {}", id);
+//        ReservationResponse response = reservationService.getReservation(id, customerId);
+//        return ResponseEntity.ok(response);
+//    }
 }

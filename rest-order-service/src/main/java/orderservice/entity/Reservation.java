@@ -45,4 +45,87 @@ public class Reservation {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+	public Reservation() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Reservation(Long id, String customerId, LocalDateTime reservationTime, Integer partySize, Long tableId,
+			ReservationStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
+		this.id = id;
+		this.customerId = customerId;
+		this.reservationTime = reservationTime;
+		this.partySize = partySize;
+		this.tableId = tableId;
+		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public LocalDateTime getReservationTime() {
+		return reservationTime;
+	}
+
+	public Integer getPartySize() {
+		return partySize;
+	}
+
+	public Long getTableId() {
+		return tableId;
+	}
+
+	public ReservationStatus getStatus() {
+		return status;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+
+	public void setReservationTime(LocalDateTime reservationTime) {
+		this.reservationTime = reservationTime;
+	}
+
+	public void setPartySize(Integer partySize) {
+		this.partySize = partySize;
+	}
+
+	public void setTableId(Long tableId) {
+		this.tableId = tableId;
+	}
+
+	public void setStatus(ReservationStatus status) {
+		this.status = status;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	
+	
 }
