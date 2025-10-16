@@ -1,24 +1,30 @@
 package tableservice.adapter.in.web;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import tableservice.domain.model.ReservationRequest;
-import tableservice.domain.model.ReservationResponse;
 import tableservice.domain.model.TableReservation;
 import tableservice.domain.port.out.ReservationRepository;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
     private final ReservationRepository reservationRepository;
-
+    private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
+    
     @Autowired
     public ReservationController(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
@@ -27,6 +33,8 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TableReservation createReservation(@RequestBody ReservationRequest reservationRequest) {
+    	
+    	logger.info("Number 1 ------> "+reservationRequest);
         // Convert the ReservationRequest to TableReservation
         TableReservation reservation = new TableReservation();
         reservation.setStatus("PENDING");

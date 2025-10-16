@@ -64,6 +64,7 @@ public class JpaReservationRepository implements ReservationRepository {
 	
 	// Method to retrieve all reservations
     public List<TableReservation> findAll() {
+    	//logger.info("Number 3(findAll) JpaReservationRepository ------> ");
         List<ReservationEntity> reservationEntities = jpaRepo.findAll();  // Get all entities from the database
         return reservationEntities.stream()  // Convert each entity to the domain model
                 .map(entity -> {

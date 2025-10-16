@@ -1,6 +1,9 @@
 package tableservice.domain.model;
 
 import java.time.LocalDateTime;
+
+import org.springframework.hateoas.RepresentationModel;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +12,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "table_reservations")
-public class TableReservation {
+public class TableReservation extends RepresentationModel<TableReservation> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

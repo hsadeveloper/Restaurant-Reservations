@@ -1,8 +1,12 @@
 package tableservice.adapter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
+import tableservice.adapter.in.web.ReservationController;
 import tableservice.adapter.out.persistence.ReservationEntity;
 import tableservice.adapter.out.persistence.SpringDataReservationRepository;
 import tableservice.domain.model.TableReservation;
@@ -17,6 +21,8 @@ import java.util.stream.Collectors;
 public class JpaReservationRepository implements ReservationRepository {
 
     private final SpringDataReservationRepository jpaRepo;
+    
+    private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
 
     @Autowired
     public JpaReservationRepository(SpringDataReservationRepository jpaRepo) {
