@@ -1,12 +1,16 @@
-package orderservice.entity;
+package tableservice.domain;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-public class CreateReservationRequest {
+
+public class ReservationRequest {
 
     private LocalDate date;
+
     private LocalTime time;
+
     private int partySize;
+
     private String customerId;
 
     // Getters and setters
@@ -43,13 +47,13 @@ public class CreateReservationRequest {
         this.customerId = customerId;
     }
 
-	@Override
-	public String toString() {
-		return "CreateReservationRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
-				+ ", customerId=" + customerId + "]";
-	}
-
-    
-
-
+    @Override
+    public String toString() {
+        return "CreateReservationRequest{" +
+                "date=" + date +
+                ", time=" + time +
+                ", partySize=" + partySize +
+                ", customerId='" + customerId + '\'' +
+                '}';
+    }
 }

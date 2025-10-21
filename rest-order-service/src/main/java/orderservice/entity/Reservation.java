@@ -1,6 +1,8 @@
 package orderservice.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +25,15 @@ public class Reservation {
     private String customerId;
 
     @Column(nullable = false)
-    private LocalDateTime reservationTime;
-
+    private LocalTime reservationTime;
+    
     @Column(nullable = false)
+    private LocalDate reservationDate;
+
+    @Column(nullable = true)
     private Integer partySize;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long tableId;
 
     @Enumerated(EnumType.STRING)
@@ -51,12 +56,14 @@ public class Reservation {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Reservation(Long id, String customerId, LocalDateTime reservationTime, Integer partySize, Long tableId,
-			ReservationStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	
+
+	public Reservation(String customerId, LocalTime reservationTime, LocalDate reservationDate, Integer partySize,
+			Long tableId, ReservationStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
-		this.id = id;
 		this.customerId = customerId;
 		this.reservationTime = reservationTime;
+		this.reservationDate = reservationDate;
 		this.partySize = partySize;
 		this.tableId = tableId;
 		this.status = status;
@@ -64,15 +71,11 @@ public class Reservation {
 		this.updatedAt = updatedAt;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
 	public String getCustomerId() {
 		return customerId;
 	}
 
-	public LocalDateTime getReservationTime() {
+	public LocalTime getReservationTime() {
 		return reservationTime;
 	}
 
@@ -96,14 +99,14 @@ public class Reservation {
 		return updatedAt;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
 	}
+	
+	
 
-
-
-	public void setReservationTime(LocalDateTime reservationTime) {
-		this.reservationTime = reservationTime;
+	public void setReservationTime(LocalTime localTime) {
+		this.reservationTime = localTime;
 	}
 
 	public void setPartySize(Integer partySize) {
@@ -124,6 +127,24 @@ public class Reservation {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public LocalDate getReservationDate() {
+		return reservationDate;
+	}
+
+	
+
+	public void setReservationDate(LocalDate reservationDate) {
+		this.reservationDate = reservationDate;
+		
+	}
+
+	@Override
+	public String toString() {
+		return "Reservation [id=" + id + ", customerId=" + customerId + ", reservationTime=" + reservationTime
+				+ ", reservationDate=" + reservationDate + ", partySize=" + partySize + ", tableId=" + tableId
+				+ ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
 
 	
