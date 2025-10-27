@@ -1,96 +1,99 @@
 package tableservice.adapter.out;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tableservice.application.port.in.TableRepositoryAdapter;
-import tableservice.application.port.out.ReservationRepository;
-import tableservice.domain.Link;
+
+import tableservice.RestaurantTableRepositoryAdapter;
+import tableservice.domain.ApiLink;
 import tableservice.domain.Links;
 import tableservice.domain.ReservationResponse;
+import tableservice.domain.ReservationStatus;
+import tableservice.domain.RestaurantTable;
+import tableservice.domain.RestaurantTableEntity;
 import tableservice.domain.TableAvailabilityRequest;
-import tableservice.domain.TableEntity;
-import tableservice.domain.TableReservation;
-import tableservice.domain.port.in.ReservationUseCase;
+
+
+
 
 @RestController
 @RequestMapping("/api/tables")
 public class ReservationController {
 
    @Autowired
-	private static  TableRepositoryAdapter tableRepositoryAdapter;
+   private  RestaurantTableRepositoryAdapter repositoryAdapter ;
 	
 	
     private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
    
-    
-	@PostMapping("/availability")
-    public ResponseEntity<ReservationResponse> checkAvailability( @RequestBody TableAvailabilityRequest request) {
-    	 System.out.println("receieving  reservation form customer from order : "+request);
-    	  // 1. Parse date and time from request
-         LocalDate date = request.getDate();
-         LocalTime time = request.getTime();
-         int partySize = request.getPartySize();
-         String customerId = request.getCustomerId();
+  
 
-         if (date == null || time == null || customerId == null) {
-             throw new IllegalArgumentException("Date, time, and customerId must not be null");
-         }
+    @PostMapping("/availability")
+    public ResponseEntity<EntityModel<ReservationResponse>> checkAvailability(@RequestBody TableAvailabilityRequest request) {
+        logger.info("Receiving reservation from customer: {}", request);
 
-         LocalDateTime expiresAt = LocalDateTime.of(date, time).plusMinutes(15);
+        LocalDate date = request.getDate();
+        LocalTime time = request.getTime();
+        int partySize = request.getPartySize();
+        String customerId = request.getCustomerId();
 
-         // 2. Get all tables
-         List<TableEntity> allTables = tableRepositoryAdapter.findAllAvailable();
-         System.out.println("Printing all tables : "+allTables);
+        if (date == null || time == null || customerId == null) {
+            throw new IllegalArgumentException("Date, time, and customerId must not be null");
+        }
 
-         // 3. Find the smallest available table using the domain service
-//         RestaurantTable availableTable = reservationUseCase.findAvailableTable(allTables, partySize);
-//         System.out.println("Printing availableTable: "+availableTable);
-
-//        // Convert to LocalDateTime
-//        LocalDateTime expiresAt = LocalDateTime.of(
-//           date,
-//            time
-//        ).plusMinutes(15);
-        Links links = new Links();
-       // links.setSelf(new Link("/api/reservations/r-42", "GET"));
-        links.setConfirm(new Link("/api/reservations/r-42/confirm", "POST"));
-        //links.setCancel(new Link("/api/reservations/r-42/cancel", "DELETE"));
-        //links.setUpdate(new Link("/api/reservations/r-42", "PUT"));
-        // Build response
+        LocalDateTime expiresAt = LocalDateTime.of(date, time).plusMinutes(15);
+//
+//        List<RestaurantTable> allTables = repositoryAdapter.findAllAvailable();
+//        logger.info("Available tables: {}", allTables);
         
+        RestaurantTable tableEntity = new RestaurantTable(partySize,customerId);
+        RestaurantTable tableReservation = repositoryAdapter.save(tableEntity);
         
-//        reservationRepository.get
-
+        System.out.println("Inside conteoller  after "+tableReservation.getId());
+  
+        Long reservationId = tableReservation.getId(); 
         ReservationResponse response = new ReservationResponse();
         response.setExpiresAt(expiresAt);
-        response.set_links(links);
-        response.setStatus("PENDING");
-        System.out.println("receieving  reservation form customer from order .................................: "+response.toString());
-        return ResponseEntity.ok(response);
+        response.setId(reservationId); 
+        response.setStatus(tableReservation.getStatus().name());
+        
+            EntityModel<ReservationResponse> model = EntityModel.of(response);
+            model.add(Link.of("/api/reservations/" + reservationId + "/confirm")
+                          .withRel("confirm")
+                          .withType("POST"));  
+
+        logger.info("Returning reservation response: {}", model);
+        return ResponseEntity.ok(model);
     }
 
     
-// // Endpoint to get all reservations
-//    @GetMapping
-//  //  public List<TableReservation> getAllReservations() {
-////        return reservationRepository.findAll();
-//    }
+
+      @GetMapping
+      public List<RestaurantTable> getAllReservations() {
+    	  System.out.println("HHHHHHHHHHHHH");
+        return repositoryAdapter.findAllAvailable();
+        		//findByStatus("AVAILABLE");
+   }
     
     
-//    @PostMapping("/")
-//    public  List<TableReservation> createtableReservation() {
-//        return reservationRepository.save();
-//    }
-//   
+    @GetMapping("/all")
+    public  List<RestaurantTableEntity> getAll() {
+        return repositoryAdapter.findAll();
+    }
+   
 }

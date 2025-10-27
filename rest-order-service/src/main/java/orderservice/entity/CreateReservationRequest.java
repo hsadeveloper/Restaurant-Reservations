@@ -9,13 +9,20 @@ public class CreateReservationRequest {
     private int partySize;
     private String customerId;
 
-    // Getters and setters
+    public CreateReservationRequest(LocalDate date, LocalTime time, int partySize, String customerId) {
+		super();
+		this.date = date;
+		this.time = time;
+		this.partySize = partySize;
+		this.customerId = customerId;
+	}
+    
 
-    public LocalDate getDate() {
+	public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+	public void setDate(LocalDate date) {
         this.date = date;
     }
 

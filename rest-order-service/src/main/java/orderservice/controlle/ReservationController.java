@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import orderservice.entity.CreateReservationRequest;
 import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
-import orderservice.service.ReservationService;
+import orderservice.entity.ReservationService;
+
 
 // ============ CONTROLLER ============
 @RestController

@@ -8,12 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReservationResponse {
 
-    private String id;  // Change to String, if you want "r-42" as the ID
+    private Long id;  // Change to String, if you want "r-42" as the ID
     private String status;
     private LocalDateTime expiresAt;
-    @JsonProperty("_links")
-    private Links _links;
-  
     
 	public ReservationResponse() {
 		super();
@@ -21,17 +18,17 @@ public class ReservationResponse {
 	}
 	
 	
-	public ReservationResponse(String id, String status, LocalDateTime expiresAt, Links _links, Boolean availability) {
+	public ReservationResponse(Long id, String status, LocalDateTime expiresAt, Boolean availability) {
 		super();
 		this.id = id;
 		this.status = status;
 		this.expiresAt = expiresAt;
-		this._links = _links;
+
 
 	}
 
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 	public String getStatus() {
@@ -40,10 +37,8 @@ public class ReservationResponse {
 	public LocalDateTime getExpiresAt() {
 		return expiresAt;
 	}
-	public Links get_links() {
-		return _links;
-	}
-	public void setId(String id) {
+	
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public void setStatus(String status) {
@@ -52,17 +47,11 @@ public class ReservationResponse {
 	public void setExpiresAt(LocalDateTime expiresAt) {
 		this.expiresAt = expiresAt;
 	}
-	public void set_links(Links _links) {
-		this._links = _links;
-	}
-
-
 	
 
 	@Override
 	public String toString() {
-		return "ReservationResponse [id=" + id + ", status=" + status + ", expiresAt=" + expiresAt + ", _links="
-				+ _links +"]";
+		return "ReservationResponse [id=" + id + ", status=" + status + ", expiresAt=" + expiresAt + "]";
 	}
 
     

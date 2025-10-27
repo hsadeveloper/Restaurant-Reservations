@@ -1,48 +1,48 @@
 package tableservice.domain;
 
 public class Links {
-    private Link self;
-    private Link confirm;
-    private Link cancel;
-    private Link update;
+    private ApiLink reserve;
+    private ApiLink confirm;
+    private ApiLink cancel;
+    private ApiLink update;
 
     public Links() {}
 
-	public Link getCancel() {
+	public ApiLink getCancel() {
 		return cancel;
 	}
 
-	public void setCancel(Link cancel) {
+	public void setCancel(ApiLink cancel) {
 		this.cancel = cancel;
 	}
 
-	public Link getSelf() {
-		return self;
+	public ApiLink getSelf() {
+		return reserve;
 	}
 
-	public Link getConfirm() {
+	public ApiLink getConfirm() {
 		return confirm;
 	}
 
-	public Link getUpdate() {
+	public ApiLink getUpdate() {
 		return update;
 	}
 
-	public void setSelf(Link self) {
-		this.self = self;
+	public void setSelf(ApiLink self) {
+		this.reserve = self;
 	}
 
-	public void setConfirm(Link confirm) {
+	public void setConfirm(ApiLink confirm) {
 		this.confirm = confirm;
 	}
 
-	public void setUpdate(Link update) {
+	public void setUpdate(ApiLink update) {
 		this.update = update;
 	}
 
 	@Override
 	public String toString() {
-		return "Links [self=" + self + ", confirm=" + confirm + ", cancel=" + cancel + ", update=" + update + "]";
+		return "Links [reserve=" + reserve + ", confirm=" + confirm + ", cancel=" + cancel + ", update=" + update + "]";
 	}
 
     
