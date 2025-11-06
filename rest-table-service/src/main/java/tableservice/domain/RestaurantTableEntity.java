@@ -7,7 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "restaurant_tables")
@@ -25,6 +28,9 @@ public class RestaurantTableEntity {
     private ReservationStatus status;;
     
     
+    private LocalDate reservationDate;
+    private LocalTime reservationTime;
+    
     public RestaurantTableEntity() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -37,6 +43,19 @@ public class RestaurantTableEntity {
 		this.customerId = customerId;
 		this.capacity = capacity;
 		this.status = status;
+	}
+	
+	
+
+
+	public RestaurantTableEntity(String customerId, int capacity, ReservationStatus status, LocalDate reservationDate,
+			LocalTime reservationTime) {
+		super();
+		this.customerId = customerId;
+		this.capacity = capacity;
+		this.status = status;
+		this.reservationDate = reservationDate;
+		this.reservationTime = reservationTime;
 	}
 
 
@@ -77,6 +96,27 @@ public class RestaurantTableEntity {
 
 	public void setStatus(ReservationStatus status) {
 		this.status = status;
+	}
+	
+
+
+	public LocalDate getReservationDate() {
+		return reservationDate;
+	}
+
+
+	public LocalTime getReservationTime() {
+		return reservationTime;
+	}
+
+
+	public void setReservationDate(LocalDate reservationDate) {
+		this.reservationDate = reservationDate;
+	}
+
+
+	public void setReservationTime(LocalTime reservationTime) {
+		this.reservationTime = reservationTime;
 	}
 
 

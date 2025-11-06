@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import orderservice.entity.CreateReservationRequest;
 import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
-import orderservice.entity.ReservationService;
+import orderservice.service.ReservationService;
 
 @SpringBootTest 
 @Testcontainers

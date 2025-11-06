@@ -3,6 +3,7 @@ package tableservice;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -10,9 +11,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 
-
+@SpringBootTest
 @Testcontainers
-@DataJdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ReservationServiceTest {
 
@@ -30,14 +30,18 @@ public class ReservationServiceTest {
         System.out.println("JDBC URL: " + postgresContainer.getJdbcUrl());
         System.out.println("User: " + postgresContainer.getUsername());
         System.out.println("Password: " + postgresContainer.getPassword());
+        System.out.println("Password: " + postgresContainer.getDatabaseName());
+        
     }
-    
-    @DynamicPropertySource
-    static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgresContainer::getUsername);
-        registry.add("spring.datasource.password", postgresContainer::getPassword);
-    }
+//    
+//    @DynamicPropertySource
+//    static void configure(DynamicPropertyRegistry registry) {
+//        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
+//        registry.add("spring.datasource.username", postgresContainer::getUsername);
+//        registry.add("spring.datasource.password", postgresContainer::getPassword);
+//        registry.add("spring.datasource.password", postgresContainer::);
+//        
+//    }
     
     @Test
     void contextLoads() {

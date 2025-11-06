@@ -1,50 +1,81 @@
 package tableservice;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import tableservice.adapter.out.ReservationController;
 import tableservice.domain.ReservationStatus;
-import tableservice.domain.RestaurantTableEntity;
+import tableservice.domain.RestaurantTable;
 
-@DataJpaTest
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class RestaurantTableRepositoryTest {
+@WebMvcTest(ReservationController.class)
+class ReservationControllerTest {
+	 @Autowired
+	    private MockMvc mockMvc;          // ✅ now injected
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("tables")
-            .withUsername("postgres")
-            .withPassword("password");
+	    @MockBean
+	    private RestaurantTableRepositoryAdapter repositoryAdapter;
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+    /**
+     * Test case for the {@code GET /api/tables} endpoint.
+     * It mocks the repository to return a list of available tables and verifies the HTTP response.
+     */
+	 @Test
+	    void testGetTables() throws Exception {
+	        when(repositoryAdapter.findAllAvailable())
+	                .thenReturn(List.of(
+	                        new RestaurantTable(4, "cust1"),
+	                        new RestaurantTable(6, "cust2")
+	                ));
 
-    @Autowired
-    private RestaurantTableRepository repository;
+	        mockMvc.perform(get("/api/tables")
+	                        .contentType(MediaType.APPLICATION_JSON))
+	                .andExpect(status().isOk())
+	                .andExpect(jsonPath("$[0].partySize").value(4))
+	                .andExpect(jsonPath("$[1].partySize").value(6));
+	    }
 
-    @Test
-    void savesAndFindsByStatus() {
-        RestaurantTableEntity t = new RestaurantTableEntity(null, "C123", 4, ReservationStatus.AVAILABLE);
-        repository.save(t);
 
-        List<RestaurantTableEntity> result = repository.findByStatus(ReservationStatus.AVAILABLE);
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCustomerId()).isEqualTo("C123");
-    }
+//    @Test
+//    void testCheckAvailability() throws Exception {
+//        RestaurantTable savedTable = new RestaurantTable(4, "cust123");
+//        savedTable.setId(1L);
+//        savedTable.setStatus(ReservationStatus.PENDING);
+//
+//        when(repositoryAdapter.save(any(RestaurantTable.class)))
+//                .thenReturn(savedTable);
+//
+//        String requestJson = """
+//            {
+//              "date": "2025-10-27",
+//              "time": "19:00",
+//              "partySize": 4,
+//              "customerId": "cust123"
+//            }
+//        """;
+//
+//        mockMvc.perform(post("/api/tables/availability")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(requestJson))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.status").value("PENDING")) // matches your entity
+//                .andExpect(jsonPath("$._links.confirm.href")
+//                        .value("/api/reservations/1/confirm"));
+//    }
 }

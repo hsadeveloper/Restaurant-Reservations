@@ -27,6 +27,9 @@ import tableservice.domain.ReservationStatus;
 import tableservice.domain.RestaurantTable;
 import tableservice.domain.RestaurantTableEntity;
 import tableservice.domain.TableAvailabilityRequest;
+import tableservice.exception.TableReservationExceptionHandler;
+
+
 
 
 
@@ -42,6 +45,18 @@ public class ReservationController {
     private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
    
   
+    @GetMapping
+    public List<RestaurantTable> getAllReservations() {
+  	  System.out.println("HHHHHHHHHHHHH");
+      return repositoryAdapter.findAllAvailable();
+      		//findByStatus("AVAILABLE");
+ }
+  
+  
+  @GetMapping("/all")
+  public  List<RestaurantTableEntity> getAll() {
+      return repositoryAdapter.findAll();
+  }
 
     @PostMapping("/availability")
     public ResponseEntity<EntityModel<ReservationResponse>> checkAvailability(@RequestBody TableAvailabilityRequest request) {
@@ -56,12 +71,29 @@ public class ReservationController {
             throw new IllegalArgumentException("Date, time, and customerId must not be null");
         }
 
+        // Max 2 active reservations per customer per day.
+        long countActiveReservations = repositoryAdapter.countActiveReservationsForCustomer(customerId, date);
+        
+        if ( countActiveReservations >= 2 ) {
+        	throw new RuntimeException("More than Two Reservation Per Customer Per day");
+        }
+        
+     // ✅ Prevent double booking
+//        long existingCount = repositoryAdapter.countActiveReservationsForCustomerOnDate(customerId, date);
+//        if (existingCount > 0) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(Map.of("message", "You already have a reservation on this date."));
+//        }
+
+        
         LocalDateTime expiresAt = LocalDateTime.of(date, time).plusMinutes(15);
+        
+        // Match table capacity to party size.
 //
 //        List<RestaurantTable> allTables = repositoryAdapter.findAllAvailable();
 //        logger.info("Available tables: {}", allTables);
         
-        RestaurantTable tableEntity = new RestaurantTable(partySize,customerId);
+        RestaurantTable tableEntity = new RestaurantTable(customerId,partySize,ReservationStatus.PENDING ,date, time );
         RestaurantTable tableReservation = repositoryAdapter.save(tableEntity);
         
         System.out.println("Inside conteoller  after "+tableReservation.getId());
@@ -83,17 +115,6 @@ public class ReservationController {
 
     
 
-      @GetMapping
-      public List<RestaurantTable> getAllReservations() {
-    	  System.out.println("HHHHHHHHHHHHH");
-        return repositoryAdapter.findAllAvailable();
-        		//findByStatus("AVAILABLE");
-   }
     
-    
-    @GetMapping("/all")
-    public  List<RestaurantTableEntity> getAll() {
-        return repositoryAdapter.findAll();
-    }
    
 }

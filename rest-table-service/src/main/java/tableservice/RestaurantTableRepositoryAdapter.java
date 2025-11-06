@@ -1,15 +1,14 @@
 package tableservice;
 
 
-import org.springframework.stereotype.Repository;
-
-import tableservice.domain.ReservationStatus;
-import tableservice.domain.RestaurantTable;
-import tableservice.domain.RestaurantTableEntity;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
+
+import tableservice.domain.RestaurantTable;
+import tableservice.domain.RestaurantTableEntity;
 
 @Repository
 public class RestaurantTableRepositoryAdapter implements RestaurantTableRepositoryPort {
@@ -24,13 +23,15 @@ public class RestaurantTableRepositoryAdapter implements RestaurantTableReposito
  public RestaurantTable save(RestaurantTable table) {
 
      RestaurantTableEntity entity = new RestaurantTableEntity(
-         table.getId(),
          table.getCustomerId(),
          table.getCapacity(),
-         table.getStatus()
+         table.getStatus(),
+         table.getReservationDate(),
+         table.getReservationTime()
      );
      System.out.println("Inside Repos  "+table.toString());
      RestaurantTableEntity saved = jpaRepository.save(entity);
+     
      System.out.println("Inside Repos  after "+saved.toString());
      return new RestaurantTable(
          saved.getId(),
@@ -61,6 +62,13 @@ public List<RestaurantTableEntity> findAll() {
     return jpaRepository.findAll();
 
 }
+
+@Override
+public Long countActiveReservationsForCustomer(String customerId, LocalDate date) {
+	return jpaRepository.countActiveReservationsForCustomerOnDate( customerId,  date);
+	 
+}
+
 
 
 }

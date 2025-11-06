@@ -1,6 +1,8 @@
 package tableservice.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class RestaurantTable {
 	
@@ -10,6 +12,8 @@ public class RestaurantTable {
 	    private Integer tableNumber;
 	    private String customerId;
 	    private  int capacity;
+	    private LocalDate reservationDate;
+	    private LocalTime reservationTime;
 	    
 		public RestaurantTable() {
 			super();
@@ -28,16 +32,16 @@ public class RestaurantTable {
 			this.capacity = capacity;
 		}
 
-      
-		public RestaurantTable(ReservationStatus status, LocalDateTime expiresAt, Integer tableNumber, String customerId,
-				int capacity) {
+   
+		public RestaurantTable(String customerId, int capacity,ReservationStatus status ,LocalDate reservationDate, LocalTime reservationTime) {
 			super();
-			this.status = status;
-			this.expiresAt = expiresAt;
-			this.tableNumber = tableNumber;
 			this.customerId = customerId;
 			this.capacity = capacity;
+			this.status = status;
+			this.reservationDate = reservationDate;
+			this.reservationTime = reservationTime;
 		}
+
 
 
 		public RestaurantTable(Long id, ReservationStatus status, String customerId, int capacity) {
@@ -55,11 +59,7 @@ public class RestaurantTable {
 			
 		}
 
-       
-
-
-
-
+      
 
 		public Long getId() {
 			return id;
@@ -109,6 +109,38 @@ public class RestaurantTable {
 		public void setCapacity(int capacity) {
 			this.capacity = capacity;
 		}
+		
+		
+
+		public void setStatus(ReservationStatus status) {
+			this.status = status;
+		}
+
+        
+
+		public LocalDate getReservationDate() {
+			return reservationDate;
+		}
+
+
+
+		public LocalTime getReservationTime() {
+			return reservationTime;
+		}
+
+
+
+		public void setReservationDate(LocalDate reservationDate) {
+			this.reservationDate = reservationDate;
+		}
+
+
+
+		public void setReservationTime(LocalTime reservationTime) {
+			this.reservationTime = reservationTime;
+		}
+
+
 
 		@Override
 		public String toString() {
