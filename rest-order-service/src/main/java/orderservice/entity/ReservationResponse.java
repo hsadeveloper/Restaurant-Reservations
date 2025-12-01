@@ -11,11 +11,10 @@ public class ReservationResponse {
     
     public ReservationResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 
-	public ReservationResponse(String id, String status, Links _links, LocalDateTime expiresAt) {
+	public ReservationResponse(String id, String status, LocalDateTime expiresAt, Links _links) {
 		super();
 		Id = id;
 		Status = status;

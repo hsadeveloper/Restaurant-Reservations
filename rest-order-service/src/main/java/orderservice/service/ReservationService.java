@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import orderservice.entity.CreateReservationRequest;
+import orderservice.entity.Link;
+import orderservice.entity.Links;
 import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.TableAvailabilityRequest;
@@ -121,14 +123,9 @@ public class ReservationService {
         reservation.setReservationTime(request.getTime());
         reservation.setReservationDate(request.getDate());
         reservation.setPartySize(request.getPartySize());
-//    Reservation  reservationObj= reservationRepository.save(reservation);
+
         
-      //  EntityModel<YourDTO> model = EntityModel.of(yourDto);
-        // model.add(linkTo(methodOn(TableController.class).reserve())
-           //     .withRel("reserve")
-             //   .withType("POST"));
-//        
-//        // Step 2: Build Reservation entity
+        //2: Build Reservation entity
         TableAvailabilityRequest availabilityRequest = new TableAvailabilityRequest();
         availabilityRequest.setCustomerId(request.getCustomerId()); // assuming userId maps to customerId
         availabilityRequest.setDate(request.getDate().toString());
@@ -149,10 +146,21 @@ public class ReservationService {
             );      
         System.out.println("Creating reservation for customer from service  response  ........................................  "+response.getBody()); 
         // Extract the response
-        //TableAvailabilityResponse availability = response.getBody();
-//
-//        return availability ;
-		return null;
+        ReservationResponse res = response.getBody();
+        if (res == null) {
+            throw new RuntimeException("Failed to create reservation in Table Service");
+        }
+
+        return new ReservationResponse(
+        	    res.getId().toString(),
+        	    res.getStatus().toString(),                           // enum → String
+        	    res.getExpiresAt(),                    // LocalDateTime → ISO-8601
+        	    new Links(
+        	        new Link("/api/reservations/" + res.getId() + "/confirm", "POST")
+        	    )
+        	);
+
+
     }
 
 
