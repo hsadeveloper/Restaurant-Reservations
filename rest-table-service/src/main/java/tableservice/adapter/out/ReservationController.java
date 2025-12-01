@@ -17,22 +17,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import tableservice.RestaurantTableRepositoryAdapter;
+import tableservice.TableRepositoryAdapter;
 import tableservice.domain.ApiLink;
 import tableservice.domain.Links;
 import tableservice.domain.ReservationResponse;
 import tableservice.domain.ReservationStatus;
 import tableservice.domain.RestaurantTable;
-import tableservice.domain.RestaurantTableEntity;
+import tableservice.domain.TableAvailability;
 import tableservice.domain.TableAvailabilityRequest;
-import tableservice.exception.TableReservationExceptionHandler;
-
-
-
-
-
+import tableservice.domain.TableDefination;
+import tableservice.domain.TableReservation;
 
 @RestController
 @RequestMapping("/api/tables")
@@ -40,81 +38,83 @@ public class ReservationController {
 
    @Autowired
    private  RestaurantTableRepositoryAdapter repositoryAdapter ;
-	
+   @Autowired
+   private  TableRepositoryAdapter tableRepositoryAdapter;
 	
     private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
    
-  
     @GetMapping
-    public List<RestaurantTable> getAllReservations() {
-  	  System.out.println("HHHHHHHHHHHHH");
+    public List<TableReservation> getAllReservations() {
       return repositoryAdapter.findAllAvailable();
-      		//findByStatus("AVAILABLE");
- }
-  
-  
-  @GetMapping("/all")
-  public  List<RestaurantTableEntity> getAll() {
-      return repositoryAdapter.findAll();
-  }
+    }
+    
+    @GetMapping("/table")
+    public ResponseEntity<TableDefination> getTable(@RequestParam("id") String tableId) {
+        TableDefination result = tableRepositoryAdapter.getByTableId(tableId);
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
 
+    @PostMapping("/savetable")
+    public ResponseEntity<TableDefination> saveTable(@RequestBody TableDefination table) {
+        TableDefination saved = tableRepositoryAdapter.save(table);
+        return ResponseEntity.ok(saved);
+    }
+
+  
+  
+    @GetMapping("/all")
+    public  List<TableDefination> getAllTables() {
+        return tableRepositoryAdapter.findAll();
+    }
+    
     @PostMapping("/availability")
-    public ResponseEntity<EntityModel<ReservationResponse>> checkAvailability(@RequestBody TableAvailabilityRequest request) {
+    public ResponseEntity<EntityModel<ReservationResponse>> checkAvailability(
+            @RequestBody TableAvailabilityRequest request) {
+    	
+        System.out.println("Receiving reservation from custome  "+ request);
+        
         logger.info("Receiving reservation from customer: {}", request);
-
+        String customerId = request.getCustomerId();
         LocalDate date = request.getDate();
         LocalTime time = request.getTime();
         int partySize = request.getPartySize();
-        String customerId = request.getCustomerId();
+        
 
         if (date == null || time == null || customerId == null) {
             throw new IllegalArgumentException("Date, time, and customerId must not be null");
         }
-
-        // Max 2 active reservations per customer per day.
-        long countActiveReservations = repositoryAdapter.countActiveReservationsForCustomer(customerId, date);
         
-        if ( countActiveReservations >= 2 ) {
-        	throw new RuntimeException("More than Two Reservation Per Customer Per day");
+        if (repositoryAdapter.existsByCustomerIdAndDateAndTime(customerId, date, time)) {
+            throw new IllegalArgumentException("Duplicate reservation detected for this customer, date, and time.");
         }
-        
-     // ✅ Prevent double booking
-//        long existingCount = repositoryAdapter.countActiveReservationsForCustomerOnDate(customerId, date);
-//        if (existingCount > 0) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT)
-//                    .body(Map.of("message", "You already have a reservation on this date."));
-//        }
 
-        
         LocalDateTime expiresAt = LocalDateTime.of(date, time).plusMinutes(15);
-        
-        // Match table capacity to party size.
-//
-//        List<RestaurantTable> allTables = repositoryAdapter.findAllAvailable();
-//        logger.info("Available tables: {}", allTables);
-        
-        RestaurantTable tableEntity = new RestaurantTable(customerId,partySize,ReservationStatus.PENDING ,date, time );
-        RestaurantTable tableReservation = repositoryAdapter.save(tableEntity);
-        
-        System.out.println("Inside conteoller  after "+tableReservation.getId());
-  
-        Long reservationId = tableReservation.getId(); 
-        ReservationResponse response = new ReservationResponse();
-        response.setExpiresAt(expiresAt);
-        response.setId(reservationId); 
-        response.setStatus(tableReservation.getStatus().name());
-        
-            EntityModel<ReservationResponse> model = EntityModel.of(response);
-            model.add(Link.of("/api/reservations/" + reservationId + "/confirm")
-                          .withRel("confirm")
-                          .withType("POST"));  
 
-        logger.info("Returning reservation response: {}", model);
-        return ResponseEntity.ok(model);
+        // ✅ Create TableReservation (correct entity)
+        TableReservation tableEntity = new TableReservation(customerId,"PENDING", date, time);
+        
+        System.out.println("Saving Entity --> "+tableEntity);
+        
+        logger.info(" ------------  Receiving reservation from tableEntity: {}", tableEntity);
+        
+        // ✅ Save using adapter
+        TableReservation saved = repositoryAdapter.save(tableEntity);
+
+        System.out.println("saved   --> "+saved);
+        
+        // Build response
+        ReservationResponse response = new ReservationResponse();
+        response.setId(saved.getId());
+        response.setStatus(saved.getStatus());
+        response.setExpiresAt(expiresAt);
+
+        EntityModel<ReservationResponse> resource = EntityModel.of(response);
+
+        return ResponseEntity.ok(resource);
     }
 
-    
 
-    
-   
 }

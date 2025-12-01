@@ -1,6 +1,8 @@
 package tableservice.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -20,53 +22,84 @@ public class TableReservation extends RepresentationModel<TableReservation> {
 
     private String customerId;
 
-    private int capacity;
 
     private String status;
+   
+    private String tableId;
+    
+    private LocalDate reservationDate;
+    
+    private LocalTime reservationTime;
+    
 
     // Constructors
     public TableReservation() {
     }
 
-    public TableReservation(Long id, String customerId, int capacity, String status) {
-        this.id = id;
+   
+    public TableReservation(String customerId, String status, LocalDate reservationDate, LocalTime reservationTime) {
         this.customerId = customerId;
-        this.capacity = capacity;
         this.status = status;
+        this.reservationDate = reservationDate;
+        this.reservationTime = reservationTime;
     }
-
     
+	public Long getId() {
+		return id;
+	}
 
-	// Getters and Setters
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getCustomerId() {
+		return customerId;
+	}
 
-    public String getCustomerId() {
-        return customerId;
-    }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public int getCapacity() {
-        return capacity;
-    }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
+	public String getTableId() {
+		return tableId;
+	}
 
-    public String getStatus() {
-        return status;
-    }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public LocalDate getReservationDate() {
+		return reservationDate;
+	}
+
+
+	public LocalTime getReservationTime() {
+		return reservationTime;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
+	}
+
+
+	public void setReservationDate(LocalDate reservationDate) {
+		this.reservationDate = reservationDate;
+	}
+
+
+	public void setReservationTime(LocalTime reservationTime) {
+		this.reservationTime = reservationTime;
+	}	
 }

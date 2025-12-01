@@ -8,6 +8,11 @@ public class CreateReservationRequest {
     private LocalTime time;
     private int partySize;
     private String customerId;
+    
+    public CreateReservationRequest() {
+        super();
+    }
+
 
     public CreateReservationRequest(LocalDate date, LocalTime time, int partySize, String customerId) {
 		super();

@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import orderservice.entity.CreateReservationRequest;
 import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
+import orderservice.entity.TableAvailabilityRequest;
 import orderservice.repository.ReservationRepository;
 @Service
 public class ReservationService {
@@ -142,7 +143,7 @@ public class ReservationService {
 //        // Make the POST call to Table Service (running on port 8088)
         ResponseEntity<ReservationResponse> response =
             restTemplate.postForEntity(
-                "http://localhost:8080/api/tables/availability",
+                "http://localhost:1987/api/tables/availability",
                 availabilityRequest,
                 ReservationResponse.class
             );      

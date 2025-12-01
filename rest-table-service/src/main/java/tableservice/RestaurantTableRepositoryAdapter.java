@@ -2,73 +2,43 @@ package tableservice;
 
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
-import tableservice.domain.RestaurantTable;
-import tableservice.domain.RestaurantTableEntity;
+import tableservice.domain.TableReservation;
 
 @Repository
 public class RestaurantTableRepositoryAdapter implements RestaurantTableRepositoryPort {
 
- private final RestaurantTableRepository jpaRepository;
+    private final TableReservationRepository reservationRepository;
 
- public RestaurantTableRepositoryAdapter(RestaurantTableRepository jpaRepository) {
-     this.jpaRepository = jpaRepository;
- }
+    public RestaurantTableRepositoryAdapter(TableReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
- @Override
- public RestaurantTable save(RestaurantTable table) {
+    @Override
+    public TableReservation save(TableReservation table) {
+        System.out.println("Saving..." + table);
+        TableReservation saved = reservationRepository.save(table);
+        System.out.println("AFTER SAVE: " + saved);
+        return saved;
+    }
 
-     RestaurantTableEntity entity = new RestaurantTableEntity(
-         table.getCustomerId(),
-         table.getCapacity(),
-         table.getStatus(),
-         table.getReservationDate(),
-         table.getReservationTime()
-     );
-     System.out.println("Inside Repos  "+table.toString());
-     RestaurantTableEntity saved = jpaRepository.save(entity);
-     
-     System.out.println("Inside Repos  after "+saved.toString());
-     return new RestaurantTable(
-         saved.getId(),
-         saved.getStatus(),
-         saved.getCustomerId(),
-         saved.getCapacity()
-     );
- }
+    @Override
+    public List<TableReservation> findAllAvailable() {
+        return reservationRepository.findAvailable();
+    }
 
- @Override
- public Optional<RestaurantTable> findById(Long id) {
-     return jpaRepository.findById(id)
-             .map(e -> new RestaurantTable(e.getId(), e.getStatus(), e.getCustomerId(), e.getCapacity()));
- }
+    @Override
+    public List<TableReservation> findByStatus(String status) {
+        return reservationRepository.findByStatus(status);
+    }
 
- @Override
- public List<RestaurantTable> findAllAvailable() {
-	 System.out.println("findAllAvailable ......");
-     return jpaRepository.findByStatus("AVAILABLE")
-             .stream()
-             .map(e -> new RestaurantTable(e.getId(), e.getStatus(), e.getCustomerId(), e.getCapacity()))
-             .collect(Collectors.toList());
- }
+   
 
-@Override
-public List<RestaurantTableEntity> findAll() {
-	System.out.println("findAll  ......");
-    return jpaRepository.findAll();
-
-}
-
-@Override
-public Long countActiveReservationsForCustomer(String customerId, LocalDate date) {
-	return jpaRepository.countActiveReservationsForCustomerOnDate( customerId,  date);
-	 
-}
-
-
-
+	public boolean existsByCustomerIdAndDateAndTime(String customerId, LocalDate date, LocalTime time) {
+		
+		return reservationRepository.existsByCustomerIdAndReservationDateAndReservationTime(customerId, date, time);
+	}
 }
