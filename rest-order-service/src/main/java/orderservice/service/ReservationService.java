@@ -14,8 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import orderservice.entity.CreateReservationRequest;
 import orderservice.entity.Link;
 import orderservice.entity.Links;
-import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
+import orderservice.entity.ReservationStatus;
+import orderservice.entity.RestaurantTableEntity;
 import orderservice.entity.TableAvailabilityRequest;
 import orderservice.repository.ReservationRepository;
 @Service
@@ -36,23 +37,18 @@ public class ReservationService {
         this.restTemplate = restTemplate;
     }
 
-//    @Autowired
-//    private TableServiceClient tableServiceClient;
-
     /**
      * Business Rule 1: Auto-cancel pending reservations after 1 hour
-     * Business Rule 2: Validate booking window (11:00–22:00)
-     * Business Rule 3: Must be at least 30 minutes in the future
-     * Business Rule 4: Party size must not exceed table capacity (≤ 6)
+     * Business Rule 2: Validate booking window (11:00–22:00) Done
+     * Business Rule 3: Must be at least 30 minutes in the future  Done
+     * Business Rule 4: Party size must not exceed table capacity (≤ 6) Done
      * Business Rule 5: No overlapping reservations by same customer within an hour
      */
 
-    
-    public ReservationResponse createReservation(CreateReservationRequest request) {
-    	
+   
+    public ReservationResponse createReservation(CreateReservationRequest request) {    	
     	// ✅ Combine date and time to get a LocalDateTime
     	ZoneId zone = ZoneId.of("America/Chicago");
-
     	ZonedDateTime reservationTime = LocalDateTime.of(request.getDate(), request.getTime()).atZone(zone);
     	ZonedDateTime now = ZonedDateTime.now(zone); // ✅ make this use the same time zone
     	System.out.println("Reservation Time:     " + reservationTime);
@@ -61,8 +57,6 @@ public class ReservationService {
     	if (reservationTime.isBefore(now.plusMinutes(30))) {
     	    throw new RuntimeException("Reservations must be at least 30 minutes in the future.");
     	}
-
-//        LocalDateTime reservationTime = LocalDateTime.of(request.getDate(), request.getTime());
         System.out.println("Request time:      " + reservationTime);
         System.out.println("System time (+30): " + LocalDateTime.now().plusMinutes(30));
         
@@ -111,6 +105,7 @@ public class ReservationService {
 //
 //        TableEntity assignedTable = availableTables.get(0);
      
+     
         // Build the URI with query params
      // Prepare the request body
      // Step 1: Combine date + time to LocalDateTime
@@ -118,11 +113,8 @@ public class ReservationService {
             request.getDate() + "T" + request.getTime() // "2025-10-20T19:00"
         );
 
-        Reservation reservation = new Reservation();
-        reservation.setCustomerId(request.getCustomerId()); // assuming userId maps to customerId
-        reservation.setReservationTime(request.getTime());
-        reservation.setReservationDate(request.getDate());
-        reservation.setPartySize(request.getPartySize());
+        RestaurantTableEntity reservation = new RestaurantTableEntity(request.getCustomerId(),request.getTime(),request.getDate(), request.getPartySize());
+        reservationRepository.save(reservation);
 
         
         //2: Build Reservation entity
@@ -153,7 +145,7 @@ public class ReservationService {
 
         return new ReservationResponse(
         	    res.getId().toString(),
-        	    res.getStatus().toString(),                           // enum → String
+        	    //res.getStatus().toString(),                           // enum → String
         	    res.getExpiresAt(),                    // LocalDateTime → ISO-8601
         	    new Links(
         	        new Link("/api/reservations/" + res.getId() + "/confirm", "POST")
@@ -162,18 +154,48 @@ public class ReservationService {
 
 
     }
-
-
-    public Reservation getReservation(Long id) {
-        Reservation reservation = reservationRepository.findById(id)
+    
+    public RestaurantTableEntity getReservation(Long id) {
+    	RestaurantTableEntity reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Reservation not found with id: " + id));
        return    reservation;
 
     }
-    public List<Reservation> getAllReservation() {
+    
+    public List<RestaurantTableEntity> getAllReservation() {
+    	
     	System.out.println("Herererererererererer .............................");
-        List<Reservation> reservation = reservationRepository.findAll();
+        List<RestaurantTableEntity> reservation = reservationRepository.findAll();
        return    reservation;
 
     }
+    
+    
+    
+    public ReservationResponse confirm(Long id) {
+    	
+    	RestaurantTableEntity reservation =
+                reservationRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+    
+ // ⭐ Prevent confirming already-confirmed/canceled reservations
+    if (reservation.getStatus() != ReservationStatus.PENDING) {
+        throw new IllegalStateException("Reservation cannot be confirmed because it is " + reservation.getStatus());
+    }
+
+    // Update status
+    reservation.setStatus(ReservationStatus.CONFIRMED);
+    reservationRepository.save(reservation);
+
+    // Build response with _links
+    return new ReservationResponse(
+            reservation.getCustomerId().toString(),
+            reservation.getUpdatedAt(),
+            new Links(new Link(
+                    "/api/reservations/" + id + "/cancel",
+                    "POST"
+            ))
+    );
+}
 }

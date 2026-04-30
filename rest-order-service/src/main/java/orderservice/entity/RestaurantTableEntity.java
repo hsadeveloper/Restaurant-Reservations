@@ -45,6 +45,15 @@ public class RestaurantTableEntity {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }	
+    
+    
+
+	public RestaurantTableEntity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 
 	public RestaurantTableEntity(Long id, String customerId, LocalTime reservationTime, LocalDate reservationDate,
 			int partySize, ReservationStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -60,9 +69,19 @@ public class RestaurantTableEntity {
 	}
 	
 
-	public RestaurantTableEntity(long l, String string, String string2, String string3, int i) {
-		// TODO Auto-generated constructor stub
+	
+	
+
+	public RestaurantTableEntity(String customerId, LocalTime reservationTime, LocalDate reservationDate,
+			int partySize) {
+		super();
+		this.customerId = customerId;
+		this.reservationTime = reservationTime;
+		this.reservationDate = reservationDate;
+		this.partySize = partySize;
 	}
+
+	
 
 	public String getCustomerId() {
 		return customerId;

@@ -1,130 +1,94 @@
 package tableservice.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "table_availability")
 public class TableAvailability {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)   
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private  String customerId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "table_id", referencedColumnName = "table_id", unique = true)
+    private TableDefination table;
 
-    private int capacity;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String status;
 
-    @Enumerated(EnumType.STRING)
-    private ReservationStatus status;;
-    
-    
-    private LocalDate reservationDate;
-    private LocalTime reservationTime;
-    
-    public TableAvailability() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    // ─── Constructors ───────────────────────────────────────────
+    public TableAvailability() {}
 
+    public TableAvailability(TableDefination table, LocalDate startDate, LocalDate endDate, String status) {
+        this.table     = table;
+        this.startDate = startDate;
+        this.endDate   = endDate;
+        this.status    = status;
+    }
 
-	public TableAvailability(Long id, String customerId, int capacity, ReservationStatus status) {
-		super();
-		this.id = id;
-		this.customerId = customerId;
-		this.capacity = capacity;
-		this.status = status;
-	}
-	
-	
+    // ─── Getters ────────────────────────────────────────────────
+    public Long getId() {
+        return id;
+    }
 
+    public TableDefination getTable() {
+        return table;
+    }
 
-	public TableAvailability(String customerId, int capacity, ReservationStatus status, LocalDate reservationDate,
-			LocalTime reservationTime) {
-		super();
-		this.customerId = customerId;
-		this.capacity = capacity;
-		this.status = status;
-		this.reservationDate = reservationDate;
-		this.reservationTime = reservationTime;
-	}
+    public String getTableId() {
+        return table != null ? table.getTableId() : null;
+    }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 
+    public String getStatus() {
+        return status;
+    }
 
-	public String getCustomerId() {
-		return customerId;
-	}
+    // ─── Setters ────────────────────────────────────────────────
+    public void setTable(TableDefination table) {
+        this.table = table;
+    }
 
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
 
-	public int getCapacity() {
-		return capacity;
-	}
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public ReservationStatus getStatus() {
-		return status;
-	}
+    // ─── Utility ────────────────────────────────────────────────
+    public boolean isAvailable() {
+        return "AVAILABLE".equalsIgnoreCase(this.status);
+    }
 
+    public boolean overlaps(LocalDate date) {
+        return (date.isEqual(startDate) || date.isAfter(startDate))
+            && (date.isEqual(endDate)   || date.isBefore(endDate));
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-	public void setCustomerId(String customerId) {
-		this.customerId = customerId;
-	}
-
-
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
-
-
-	public void setStatus(ReservationStatus status) {
-		this.status = status;
-	}
-	
-
-
-	public LocalDate getReservationDate() {
-		return reservationDate;
-	}
-
-
-	public LocalTime getReservationTime() {
-		return reservationTime;
-	}
-
-
-	public void setReservationDate(LocalDate reservationDate) {
-		this.reservationDate = reservationDate;
-	}
-
-
-	public void setReservationTime(LocalTime reservationTime) {
-		this.reservationTime = reservationTime;
-	}
-
-
-	@Override
-	public String toString() {
-		return "RestaurantTableEntity [id=" + id + ", customerId=" + customerId + ", capacity=" + capacity + ", status="
-				+ status + "]";
-	}
-    	 
-
+    @Override
+    public String toString() {
+        return "TableAvailability{" +
+            "id=" + id +
+            ", tableId=" + (table != null ? table.getTableId() : "null") +
+            ", startDate=" + startDate +
+            ", endDate=" + endDate +
+            ", status='" + status + '\'' +
+            '}';
+    }
 }

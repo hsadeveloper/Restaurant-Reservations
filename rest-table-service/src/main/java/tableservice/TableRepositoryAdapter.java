@@ -29,9 +29,12 @@ public class TableRepositoryAdapter implements TableRepositoryPort {
 	}
 
 
-	@Override
-	public TableDefination getByTableId(String tableId) {
-		return tableRepository.findByTableId(tableId);
+	public List<TableDefination> findBestFitByCapacity(int partySize) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+
+	
 
 }

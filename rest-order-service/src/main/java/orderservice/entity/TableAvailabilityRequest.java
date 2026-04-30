@@ -10,11 +10,10 @@ public class TableAvailabilityRequest {
    
 	public TableAvailabilityRequest() {
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
-   
-
+  
 	public TableAvailabilityRequest(String date, String time, Integer partySize, String customerId) {
 		super();
 		this.date = date;
@@ -67,14 +66,6 @@ public class TableAvailabilityRequest {
 		return "TableAvailabilityRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
 				+ ", customerId=" + customerId + "]";
 	}
-
-
-
-	
-	
-
-	
-  
 	
   
 }

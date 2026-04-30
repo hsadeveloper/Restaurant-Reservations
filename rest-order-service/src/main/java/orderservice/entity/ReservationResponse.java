@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class ReservationResponse {
 	private String Id;
-	private  String Status;	
+	//private  String Status;	
     private Links _links;
     private LocalDateTime expiresAt;
     
@@ -13,11 +13,10 @@ public class ReservationResponse {
 		super();
 	}
 
-
-	public ReservationResponse(String id, String status, LocalDateTime expiresAt, Links _links) {
+	public ReservationResponse(String id, LocalDateTime expiresAt, Links _links) {
 		super();
 		Id = id;
-		Status = status;
+		//Status = status;
 		this._links = _links;
 		this.expiresAt = expiresAt;
 	}
@@ -28,30 +27,13 @@ public class ReservationResponse {
 	}
 
 
-
-	public String getStatus() {
-		return Status;
-	}
-
-
-
 	public Links get_links() {
 		return _links;
 	}
 
-
-
 	public void setId(String id) {
 		Id = id;
 	}
-
-
-
-	public void setStatus(String status) {
-		Status = status;
-	}
-
-
 
 	public void set_links(Links _links) {
 		this._links = _links;
@@ -71,15 +53,7 @@ public class ReservationResponse {
 
 	@Override
 	public String toString() {
-		return "TableAvailabilityResponse [Id=" + Id + ", Status=" + Status + ", _links=" + _links + "]";
+		return "TableAvailabilityResponse [Id=" + Id + ", Status="  + ", _links=" + _links + "]";
 	}
-    
-    
-
-	
-
-
-   
-    
-    
+  
 }

@@ -14,21 +14,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import tableservice.adapter.out.ReservationController;
 import tableservice.domain.ReservationStatus;
 import tableservice.domain.RestaurantTable;
 
-@WebMvcTest(ReservationController.class)
+@AutoConfigureJsonTesters
 class ReservationControllerTest {
 	 @Autowired
 	    private MockMvc mockMvc;          // ✅ now injected
 
-	    @MockBean
+	 @MockitoBean
 	    private RestaurantTableRepositoryAdapter repositoryAdapter;
 
     /**

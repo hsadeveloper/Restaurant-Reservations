@@ -1,3 +1,4 @@
+
 package tableservice.domain;
 
 import java.time.LocalDate;
@@ -43,6 +44,7 @@ public class TableReservation extends RepresentationModel<TableReservation> {
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }
+    
     
 	public Long getId() {
 		return id;

@@ -8,7 +8,7 @@ import tableservice.domain.TableDefination;
 public interface TableRepositoryPort {
 	
 	 List<TableDefination> findAll();
-	 TableDefination save(TableDefination table);  // ✔ correct
-	 TableDefination getByTableId(String tableId);
+	 TableDefination save(TableDefination table);  
+	 
 
 }
