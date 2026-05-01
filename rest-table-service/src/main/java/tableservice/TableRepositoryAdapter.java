@@ -35,6 +35,12 @@ public class TableRepositoryAdapter implements TableRepositoryPort {
 	}
 
 
+	public TableDefination getByTableId(String tableId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 	
 
 }

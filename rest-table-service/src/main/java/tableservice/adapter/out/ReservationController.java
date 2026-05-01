@@ -99,7 +99,7 @@ public class ReservationController {
         // Pick the best fit (smallest table that fits)
         TableDefination matchedTable = availableTables.get(0);
 
-        // ── Create availability record — status lives here ───────────
+        // ── Create availability recor	d — status lives here ───────────
         TableAvailability availability = new TableAvailability(
             matchedTable,
             date,

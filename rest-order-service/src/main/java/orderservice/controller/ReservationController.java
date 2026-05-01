@@ -36,7 +36,6 @@ public class ReservationController {
     @PostMapping("/")
     public ResponseEntity<ReservationResponse> createReservation1(
              @RequestBody CreateReservationRequest request) {
-        //System.out.println("receieving  reservation form customer from order  (1)   ********************************88 :"+request.toString());
         ReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
