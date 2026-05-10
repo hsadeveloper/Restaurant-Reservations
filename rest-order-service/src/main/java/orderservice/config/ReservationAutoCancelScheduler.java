@@ -37,12 +37,11 @@ public class ReservationAutoCancelScheduler {
     	 
     	 logger.info(">>> SCHEDULER TRIGGERED <<<\n" +
     	            "Process: Reservation Consistency Check\n" +
-    	            "Time:    {}\n" +
-    	            "Thread:  {}", 
-    	            LocalDateTime.now(java.time.ZoneOffset.UTC), 
-    	            Thread.currentThread().getName());
+    	            "Time:    {}\n" , 
+    	            LocalDateTime.now(java.time.ZoneOffset.UTC));
 
         LocalDateTime cutoff = LocalDateTime.now().minusHours(5);
+        
         List<RestaurantTableEntity> pendingReservations = reservationRepository
                 .findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, cutoff);
         
