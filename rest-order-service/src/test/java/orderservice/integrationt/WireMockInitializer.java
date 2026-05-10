@@ -13,7 +13,6 @@ public class WireMockInitializer
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
 
-        // ✅ WireMockServer — not WebServer
         WireMockServer wireMockServer = new WireMockServer(
             WireMockConfiguration.wireMockConfig().dynamicPort()
         );

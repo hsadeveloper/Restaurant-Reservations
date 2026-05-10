@@ -1,124 +1,133 @@
-# Restaurant-Reservations
+## Resturant Table Reservation
+---
 
-![Alt text describing image](UML_1.png)
+
+
+
+
+
+
+#### Edge Cases:
+---
+# 🚦 API Validation & Edge Cases
+
+This document outlines the business rules and validation constraints for the Restaurant Reservation API.
 
 ---
 
-Later:  Client → Order Service (POST /api/reservations/{id}/confirm)
-        ↳ Order Service finalizes or cancels
-Where the conformation happened
-Two copys of table reservation one in order service the other one in table service
+### 1. Table Capacity Constraint
+*   **Rule:** Maximum allowed party size per table is **6**.
+*   **Validation:** `partySize <= 6`
 
-
-# Make A Reservation (Order)
-
-**`POST`** `http://localhost:7083/api/reservations`
-###### another copy will be saved in the tabe service  in addition to order service
-
----
-
-### Sample Request
-
+**Example Request:**
 ```json
 {
-  "date": "2026-04-19",
-  "time": "13:00",
+  "date": "2026-05-09", 
+  "time": "20:30", 
+  "partySize": 7,
+  "customerId": "c-125"
+}
+```
+**Expected Response:**
+> `400 Bad Request`: "Maximum allowed party size per table is 6."
+
+---
+
+### 2. Lead Time Constraint
+*   **Rule:** Reservations must be made at least **30 minutes** in the future from the current system time.
+*   **Validation:** `requestedTime >= currentTime + 30m`
+
+**Example Request:**
+```json
+{
+  "date": "2026-05-09",
+  "time": "03:30", 
   "partySize": 4,
-  "customerId": "c-126"
+  "customerId": "c-125"
 }
 ```
+**Expected Response:**
+> `400 Bad Request`: "Reservations must be at least 30 minutes in the future."
 
 ---
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| **Request Body** | | | |
-| `date` | `string` | Yes | Reservation date in `YYYY-MM-DD` format. e.g. `"2026-04-19"` |
-| `time` | `string` | Yes | Time in `HH:MM` 24-hour format. Must be at least 30 minutes in the future. e.g. `"13:00"` |
-| `partySize` | `integer` | Yes | Number of guests. Must be a positive integer. Maximum allowed party size per table is `6`. e.g. `4` |
-| `customerId` | `string` | Yes | ID of the customer making the reservation. e.g. `"c-126"` |
-| **Response — 201 Created** | | | |
-| `id` | `string` | Response | Unique identifier for the reservation. e.g. `"2"` |
-| `status` | `string` | Response | Reservation status. Always `PENDING` on creation. |
-| `expiresAt` | `string` | Response | ISO 8601 expiry datetime. e.g. `"2026-04-26T11:15:00"` |
-| `_links.confirm.href` | `string` | Response | URL to confirm the reservation. e.g. `"/api/reservations/2/confirm"` |
-| `_links.confirm.method` | `string` | Response | HTTP method for the confirm URL. Always `"POST"` |
-| **Errors** | | | |
-| `400` | `Bad Request` | Error | Duplicate reservation detected for this customer, date, and time. |
-| `400` | `Bad Request` | Error | Maximum allowed party size per table is `6`. |
+### 3. Operational Hours Constraint
+*   **Rule:** Bookings are only accepted between **11:00** and **22:00**.
+*   **Validation:** `time >= 11:00` AND `time <= 22:00`
 
----
-
-### Sample Response
-
+**Example Request:**
 ```json
 {
-  "id": "2",
-  "status": "PENDING",
-  "expiresAt": "2026-04-26T11:15:00",
-  "_links": {
-    "confirm": {
-      "href": "/api/reservations/2/confirm",
-      "method": "POST"
-    }
-  }
+  "date": "2026-05-16", 
+  "time": "10:30", 
+  "partySize": 4, 
+  "customerId": "c-125"
 }
 ```
----
-*** GET *** `http://localhost:7083/api/reservations/{id}`
-###### Q) From which table?
+**Expected Response:**
+> `400 Bad Request`: "Booking Rejected: Outside operational hours. [Requested: 10:30], [Allowed: 11:00 - 22:00]"
 
-```
-
-{
-    "customerId": "c-123",
-    "reservationTime": "11:00:00",
-    "reservationDate": "2026-04-26",
-    "partySize": 6,
-    "status": "PENDING",
-    "createdAt": "2026-04-25T23:08:24.613138",
-    "updatedAt": "2026-04-25T23:08:24.613139"
-}
-```
 ---
 
-*** POST ***  `http://localhost:7083/api/reservations/8/confirm`
-##### Q) Here order table has been updated the status to   CONFIRMED . How about Table service?
-##### in this situatuin two copies of data will have
-```
+### 4. Data Format & Type Validation
+*   **Rule:** Time must follow the strict ISO 24-hour format (`HH:mm`).
+*   **Common Error:** Missing leading zeros (e.g., `8:30` instead of `08:30`).
+
+**Example Request:**
+```json
 {
-    "_links": {
-        "confirm": {
-            "href": "/api/reservations/8/cancel",
-            "method": "POST"
-        }
-    },
-    "expiresAt": "2026-04-30T22:20:04.985191",
-    "id": "c-123"
+  "date": "2026-05-09",
+  "time": "8:30", 
+  "partySize": 4,
+  "customerId": "c-125"
 }
------------------------------------------------------------------------------------
-8	| 6 | 2026-04-26 |	11:00:00 | 2026-04-25 23:08:24.613138 |	c-123 |	CONFIRMED
------------------------------------------------------------------------------------
-
 ```
+**Expected Response:**
+> `400 Bad Request`: "JSON parse error: Cannot deserialize value of type `java.time.LocalTime` from String '8:30': Text '8:30' could not be parsed at index 0"
 
-Table service
+---
 
-
-
-```
-GET /tables/policies — expose booking policies
-```
-#### Elaborate on the endpoint?
-
-
-*** POST ***```http://localhost:1987/api/tables/availability```
+### 🛠️ Developer Implementation Note
+All validations are handled via a global `@RestControllerAdvice` to ensure consistent error messaging across the microservice. For scheduling and automated cleanup of expired `PENDING` reservations, refer to the **ShedLock** configuration.
 
 
 
 
+### Usage Spring Library:
+# 🛠️ Project Dependencies & Infrastructure
 
-*** POST *** `/tables/reservations — create table booking`
+This project uses a modern microservices stack built on **Spring Boot**. Below is a breakdown of the key libraries and their roles in the system.
+
+## 🚀 Core Dependencies (Production)
 
 
+| Dependency | Purpose |
+| :--- | :--- |
+| **ShedLock Spring** | Ensures `@Scheduled` tasks run **at most once** across multiple server instances by using a distributed lock. |
+| **ShedLock JDBC Provider** | Manages the coordination of locks within the PostgreSQL `shedlock` table. |
+| **Spring Data JPA** | Simplifies data persistence and management for `RestaurantTableEntity` using the Repository pattern. |
+| **PostgreSQL Driver** | The database driver that allows the application to connect to the PostgreSQL instance. |
+| **Spring Web** | The foundation for building REST APIs, handling JSON serialization, and HTTP routing. |
+| **Spring HATEOAS** | Enhances API responses with hypermedia links, making the API self-discoverable. |
+| **Spring Boot Docker Compose** | Automatically manages local infrastructure by starting your `docker-compose.yml` services when the app runs. |
 
+---
+
+## 🧪 Testing & Quality Suite
+
+
+| Dependency | Purpose |
+| :--- | :--- |
+| **Testcontainers** | Launches a **real** PostgreSQL instance in Docker during integration tests for total environment parity. |
+| **WireMock** | Simulates external API responses to test how the Order Service handles external failures. |
+| **RestAssured** | Provides a fluent, readable DSL for testing REST endpoints with `given/when/then` syntax. |
+| **ArchUnit** | Enforces architectural constraints to ensure clean code boundaries and package structure. |
+| **Spring Boot Starter Test** | The standard testing toolkit providing JUnit 5, Mockito, and AssertJ. |
+
+---
+
+## 🏗️ Infrastructure Requirements
+
+*   **Database:** PostgreSQL (with a `shedlock` table for task coordination).
+*   **Containerization:** Docker & Docker Compose for local development.
+*   **Time Management:** All timestamps are synchronized to **UTC** to avoid timezone mismatches between the App and DB.

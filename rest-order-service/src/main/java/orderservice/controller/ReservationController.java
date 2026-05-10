@@ -48,9 +48,7 @@ public class ReservationController {
 
         return ResponseEntity.ok(response);
     }
-
-    
-    
+  
 
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantTableEntity> getReservation(@PathVariable("id") Long id) {

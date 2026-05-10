@@ -1,11 +1,9 @@
-package tableservice;
+package tableservice.domain.port.in;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import tableservice.domain.RestaurantTable;
 import tableservice.domain.TableDefination;
 
 public interface TableRepository extends JpaRepository<TableDefination, Long>{

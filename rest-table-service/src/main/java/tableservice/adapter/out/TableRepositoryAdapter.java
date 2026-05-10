@@ -1,10 +1,12 @@
-package tableservice;
+package tableservice.adapter.out;
 
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
 import tableservice.domain.TableDefination;
+import tableservice.domain.port.in.TableRepository;
+import tableservice.domain.port.in.TableRepositoryPort;
 
 @Repository
 public class TableRepositoryAdapter implements TableRepositoryPort {
@@ -29,18 +31,10 @@ public class TableRepositoryAdapter implements TableRepositoryPort {
 	}
 
 
-	public List<TableDefination> findBestFitByCapacity(int partySize) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 	public TableDefination getByTableId(String tableId) {
-		// TODO Auto-generated method stub
-		return null;
+		return tableRepository.findByTableId(tableId);
+		
 	}
-
-
 	
 
 }

@@ -53,7 +53,11 @@ public class ReservationResponse {
 
 	@Override
 	public String toString() {
-		return "TableAvailabilityResponse [Id=" + Id + ", Status="  + ", _links=" + _links + "]";
+	    // String.valueOf safely handles null by returning the literal string "null"
+	    return "ReservationResponse [Id=" + String.valueOf(Id) + 
+	           ", _links=" + String.valueOf(_links) + 
+	           ", expiresAt=" + String.valueOf(expiresAt) + "]";
 	}
-  
+
+ 
 }

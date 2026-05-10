@@ -1,8 +1,8 @@
-package tableservice;
+package tableservice.domain.port.in;
 
 import java.util.List;
 
-import tableservice.domain.TableAvailability;
+
 import tableservice.domain.TableDefination;
 
 public interface TableRepositoryPort {

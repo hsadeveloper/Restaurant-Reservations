@@ -2,6 +2,7 @@ package tableservice.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "table_availability")
@@ -11,25 +12,37 @@ public class TableAvailability {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "table_id", referencedColumnName = "table_id", unique = true)
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "table_id") // this should reference PK (id)
     private TableDefination table;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String status;
+    
+    private String custId;
 
     // ─── Constructors ───────────────────────────────────────────
     public TableAvailability() {}
 
-    public TableAvailability(TableDefination table, LocalDate startDate, LocalDate endDate, String status) {
+    public TableAvailability(TableDefination table, LocalDateTime startDate, LocalDateTime endDate, String status) {
         this.table     = table;
         this.startDate = startDate;
         this.endDate   = endDate;
         this.status    = status;
     }
+      
 
-    // ─── Getters ────────────────────────────────────────────────
+    public TableAvailability(TableDefination table, LocalDateTime startDate, LocalDateTime endDate, String custId ,String status) {
+		super();
+		this.table = table;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.status = status;
+		this.custId = custId;
+	}
+
+	// ─── Getters ────────────────────────────────────────────────
     public Long getId() {
         return id;
     }
@@ -42,11 +55,11 @@ public class TableAvailability {
         return table != null ? table.getTableId() : null;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
@@ -59,11 +72,11 @@ public class TableAvailability {
         this.table = table;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -76,19 +89,26 @@ public class TableAvailability {
         return "AVAILABLE".equalsIgnoreCase(this.status);
     }
 
-    public boolean overlaps(LocalDate date) {
+    public boolean overlaps(LocalDateTime date) {
         return (date.isEqual(startDate) || date.isAfter(startDate))
             && (date.isEqual(endDate)   || date.isBefore(endDate));
     }
+    
+    
 
-    @Override
-    public String toString() {
-        return "TableAvailability{" +
-            "id=" + id +
-            ", tableId=" + (table != null ? table.getTableId() : "null") +
-            ", startDate=" + startDate +
-            ", endDate=" + endDate +
-            ", status='" + status + '\'' +
-            '}';
-    }
+    public String getCustId() {
+		return custId;
+	}
+
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	@Override
+	public String toString() {
+		return "TableAvailability [id=" + id + ", table=" + table + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", status=" + status + ", custId=" + custId + "]";
+	}
+
+
 }

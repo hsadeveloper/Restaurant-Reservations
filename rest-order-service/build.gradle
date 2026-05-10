@@ -45,6 +45,12 @@ dependencies {
     // RestAssured
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
+    
+     // Standard ShedLock Spring integration
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:7.7.0'
+    
+      // REQUIRED: The actual logic for PostgreSQL/JDBC (the missing import)
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0'
 }
 
 dependencyManagement {

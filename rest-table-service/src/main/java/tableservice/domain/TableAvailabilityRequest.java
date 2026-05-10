@@ -64,11 +64,6 @@ public class TableAvailabilityRequest {
 		return "TableAvailabilityRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
 				+ ", customerId=" + customerId + "]";
 	}
-
-	
-
-	
-  
 	
   
 }

@@ -1,4 +1,4 @@
-package tableservice.adapter.out;
+package tableservice.adapter.in;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -6,45 +6,57 @@ import java.time.LocalTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tableservice.RestaurantTableRepositoryAdapter;
-import tableservice.TableDefinationRepository;
-import tableservice.TableRepositoryAdapter;
+
+import tableservice.adapter.out.AvailaibilityRepositoryAdapter;
+import tableservice.adapter.out.RestaurantTableRepositoryAdapter;
+import tableservice.adapter.out.TableRepositoryAdapter;
 import tableservice.domain.ReservationResponse;
 import tableservice.domain.TableAvailability;
 import tableservice.domain.TableAvailabilityRequest;
 import tableservice.domain.TableDefination;
 import tableservice.domain.TableReservation;
-import tableservice.domain.repository.AvailaibilityRepositoryAdapter;
+import tableservice.domain.port.in.TableDefinationRepository;
 
 @RestController
 @RequestMapping("/api/tables")
-public class ReservationController {
+public class BookingController {
 	
 
-   private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
+   private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 
-   @Autowired
+
    private  RestaurantTableRepositoryAdapter repositoryAdapter ;
    
-   @Autowired
+
    private  TableRepositoryAdapter tableRepositoryAdapter;
    
-   @Autowired
+
   private AvailaibilityRepositoryAdapter availaibilityRepositoryAdapter;
    
-   @Autowired
-   private TableDefinationRepository tableDefinationRepository;
-	 
-    @GetMapping
+
+  private TableDefinationRepository tableDefinationRepository;
+   
+   	 
+    public BookingController(RestaurantTableRepositoryAdapter repositoryAdapter,
+		TableRepositoryAdapter tableRepositoryAdapter, AvailaibilityRepositoryAdapter availaibilityRepositoryAdapter,
+		TableDefinationRepository tableDefinationRepository) {
+	super();
+	this.repositoryAdapter = repositoryAdapter;
+	this.tableRepositoryAdapter = tableRepositoryAdapter;
+	this.availaibilityRepositoryAdapter = availaibilityRepositoryAdapter;
+	this.tableDefinationRepository = tableDefinationRepository;
+}
+
+	@GetMapping
     public List<TableReservation> getAllReservations() {
       return repositoryAdapter.findAllAvailable();
     }
@@ -60,7 +72,7 @@ public class ReservationController {
 
     @PostMapping("/savetable")
     public ResponseEntity<TableDefination> saveTable(@RequestBody TableDefination table) {
-    	System.out.println("Obkect from Controllerrrrrr --->********"+table.toString());
+    	logger.info("Obkect from Controllerrrrrr --->********"+table.toString());
         TableDefination saved = tableRepositoryAdapter.save(table);
         return ResponseEntity.ok(saved);
     }
@@ -70,16 +82,40 @@ public class ReservationController {
         return tableRepositoryAdapter.findAll();
     }
     
+    // get available table by this date and time
+    
+    
+     
+
+ // Match the URL: /api/tables/availabille/{size}
+    @GetMapping("/availabille/{size}") 
+    public ResponseEntity<List<TableDefination>> getAvailableTables(@PathVariable("size") int size) {
+        
+        List<TableDefination> bestFitTables = tableDefinationRepository.findBestFitByCapacity(size);
+
+        if (bestFitTables.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(bestFitTables);
+    }
+
+
+   
     @PostMapping("/availability")
     public ResponseEntity<EntityModel<ReservationResponse>> checkAvailability(
             @RequestBody TableAvailabilityRequest request) {
-
-        System.out.println("Receiving reservation from customer: " + request);
-        logger.info("Receiving reservation from customer: {}", request);
-
+    	
+    	logger.info("Receiving reservation from rest-order: " + request);
+        
         String customerId = request.getCustomerId();
         LocalDate date    = request.getDate();
         LocalTime time    = request.getTime();
+        LocalDateTime startDateTime = LocalDateTime.of(date, time);
+
+        
+        LocalDateTime endDateTime   = startDateTime.plusHours(2);
+        
         int partySize     = request.getPartySize();
 
         if (date == null || time == null || customerId == null) {
@@ -92,34 +128,40 @@ public class ReservationController {
         
      // ── Match table to party size ────────────────────────────────
         List<TableDefination> availableTables = tableDefinationRepository.findBestFitByCapacity(partySize);
+        
+        logger.info("availableTables ----------------------------------------------------------->"+availableTables);
+        
         if (availableTables.isEmpty()) {
-            throw new IllegalArgumentException("No available table found for a party of " + partySize + ".");
+            throw new IllegalArgumentException("No available table found for a party of " + partySize );
         }
         
         // Pick the best fit (smallest table that fits)
         TableDefination matchedTable = availableTables.get(0);
 
         // ── Create availability recor	d — status lives here ───────────
+        /***** issue****/
         TableAvailability availability = new TableAvailability(
             matchedTable,
-            date,
-            date,
-            "RESERVED"   // ← status set here, not on TableDefination
+            startDateTime,
+            endDateTime,
+            customerId,
+            "RESERVED"  
         );
         
-
         LocalDateTime expiresAt = LocalDateTime.of(date, time).plusMinutes(15);
 
         // 1️⃣ Create and save TableDefination
-        TableDefination tableEntity = new TableDefination("tableId123", partySize);
+        TableDefination tableEntity = new TableDefination(matchedTable.getTableId(), partySize);
+        
         TableDefination savedTable  = tableRepositoryAdapter.save(tableEntity);
-        System.out.println("Saved TableDefination --> " + savedTable);
+        logger.info("Saved TableDefination --------------- --> " + savedTable);
 
         // 2️⃣ Create TableAvailability and link to saved TableDefination
-        TableAvailability availability = new TableAvailability(
+        TableAvailability availability2 = new TableAvailability(
             savedTable,
-            date,
-            date,           // endDate = same day for a single reservation
+            startDateTime,
+            endDateTime,           // endDate = same day for a single reservation
+            customerId,
             "PENDING"   // mark as unavailable once reserved
         );
     
@@ -131,7 +173,7 @@ public class ReservationController {
 
         // 4️⃣ Build response
         ReservationResponse response = new ReservationResponse();
-        response.setId(finalSaved.getId());
+        response.setId(tableAvailSavedObj.getId());
         response.setStatus("RESERVED");
         response.setExpiresAt(expiresAt);
 

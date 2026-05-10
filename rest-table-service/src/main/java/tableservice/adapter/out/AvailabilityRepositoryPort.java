@@ -1,4 +1,4 @@
-package tableservice.domain.port.in;
+package tableservice.adapter.out;
 
 import java.util.List;
 

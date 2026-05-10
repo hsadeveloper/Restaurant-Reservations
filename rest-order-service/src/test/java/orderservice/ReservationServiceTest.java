@@ -1,31 +1,21 @@
-/**
-
 package orderservice;
 
-import org.junit.jupiter.api.Assertions;
-
-
+import static org.junit.Assert.assertNotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontaineArs.containers.PostgreSQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import orderservice.entity.CreateReservationRequest;
-import orderservice.entity.Reservation;
 import orderservice.entity.ReservationResponse;
 import orderservice.service.ReservationService;
 
@@ -43,7 +33,7 @@ public class ReservationServiceTest {
             .withUsername("postgres")
             .withPassword("password");
 
-    // ✅ Dynamically tell Spring to use the container’s DB credentials
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
@@ -67,11 +57,6 @@ public class ReservationServiceTest {
 
         ReservationResponse fakeResponse = new ReservationResponse();
 
-
-        ResponseEntity<ReservationResponse> entity =
-                new ResponseEntity<>(fakeResponse, HttpStatus.OK);
-
-
         // When
         ReservationResponse response = reservationService.createReservation(request);
 
@@ -79,4 +64,4 @@ public class ReservationServiceTest {
         assertNotNull(response);
 
     }
-} **/
+}

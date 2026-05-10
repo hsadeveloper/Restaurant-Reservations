@@ -1,4 +1,4 @@
-package tableservice;
+package tableservice.domain.port.in;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

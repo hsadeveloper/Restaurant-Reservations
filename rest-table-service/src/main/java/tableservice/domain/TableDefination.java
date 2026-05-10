@@ -14,6 +14,10 @@ public class TableDefination {
     @Column(name = "table_id")  // assumes DB column name is table_id
     private String tableId;
     private int capacity;
+    
+    public TableDefination() {
+
+    }
    
     public TableDefination(String tableId, int capacity) {
         this.tableId = tableId;
