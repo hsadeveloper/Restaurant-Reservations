@@ -1,67 +1,67 @@
 package orderservice.entity;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+
 public class CreateReservationRequest {
 
-    private LocalDate date;
-    private LocalTime time;
-    private int partySize;
-    private String customerId;
-    
-    public CreateReservationRequest() {
-        super();
-    }
+  private LocalDate date;
+  private LocalTime time;
+  private int partySize;
+  private String customerId;
+
+  public CreateReservationRequest() {
+    super();
+  }
+
+  public CreateReservationRequest(LocalDate date, LocalTime time, int partySize,
+      String customerId) {
+    super();
+    this.date = date;
+    this.time = time;
+    this.partySize = partySize;
+    this.customerId = customerId;
+  }
 
 
-    public CreateReservationRequest(LocalDate date, LocalTime time, int partySize, String customerId) {
-		super();
-		this.date = date;
-		this.time = time;
-		this.partySize = partySize;
-		this.customerId = customerId;
-	}
-    
+  public LocalDate getDate() {
+    return date;
+  }
 
-	public LocalDate getDate() {
-        return date;
-    }
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
 
-	public void setDate(LocalDate date) {
-        this.date = date;
-    }
+  public LocalTime getTime() {
+    return time;
+  }
 
-    public LocalTime getTime() {
-        return time;
-    }
+  public void setTime(LocalTime time) {
+    this.time = time;
+  }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
+  public int getPartySize() {
+    return partySize;
+  }
 
-    public int getPartySize() {
-        return partySize;
-    }
+  public void setPartySize(int partySize) {
+    this.partySize = partySize;
+  }
 
-    public void setPartySize(int partySize) {
-        this.partySize = partySize;
-    }
+  public String getCustomerId() {
+    return customerId;
+  }
 
-    public String getCustomerId() {
-        return customerId;
-    }
+  public void setCustomerId(String customerId) {
+    this.customerId = customerId;
+  }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
+  @Override
+  public String toString() {
+    return "CreateReservationRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
+        + ", customerId=" + customerId + "]";
+  }
 
-	@Override
-	public String toString() {
-		return "CreateReservationRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
-				+ ", customerId=" + customerId + "]";
-	}
-
-    
 
 
 }
