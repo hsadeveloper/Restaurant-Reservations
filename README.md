@@ -3,8 +3,20 @@
 
 
 
+## 🎯 Goal
+When a customer requests a reservation (date, time, party size), Order Service asks Table Service if a table is available.
+If available, a pending reservation is created and must be confirmed within a time limit; otherwise it’s auto-canceled.
 
+## 🧩 Services & Responsibilities
 
+### 1) 🧾 Order Service (REST, **Layered**)
+**Architecture:** Controller → Service → Repository (JPA)  
+**Purpose:** Accept reservation requests, manage lifecycle (pending → confirmed/canceled), call Table Service for availability.
+
+**Core endpoints (JSON, REST):**
+- `POST /api/reservations` — create pending reservation  
+- `POST /api/reservations/{id}/confirm`  
+- `GET /api/reservations/{id}`  
 
 
 #### Edge Cases:
