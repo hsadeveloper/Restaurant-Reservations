@@ -98,6 +98,18 @@ This document outlines the business rules and validation constraints for the Res
 > `400 Bad Request`: "JSON parse error: Cannot deserialize value of type `java.time.LocalTime` from String '8:30': Text '8:30' could not be parsed at index 0"
 
 ---
+###
+```
+  6:00 ───────── 7:30   Cleanup   7:45
+  [ Customer A ]         [15m]    [Next Guest]
+
+
+  Existing:  6:00 -------- 7:30
+          New:   7:00 -------- 8:00
+                 OVERLAP
+```
+
+---
 
 ### 🛠️ Developer Implementation Note
 All validations are handled via a global `@RestControllerAdvice` to ensure consistent error messaging across the microservice. For scheduling and automated cleanup of expired `PENDING` reservations, refer to the **ShedLock** configuration.
