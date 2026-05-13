@@ -1,11 +1,11 @@
 package orderservice.entity;
 
 public class Link {
+
   private String href;
   private String method;
 
   public Link() {}
-
 
   public Link(String href, String method) {
     this.href = href;

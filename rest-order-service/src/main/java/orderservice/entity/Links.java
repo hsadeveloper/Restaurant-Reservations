@@ -1,7 +1,7 @@
 package orderservice.entity;
 
-
 public class Links {
+
   private Link confirm;
 
   public Links() {}
