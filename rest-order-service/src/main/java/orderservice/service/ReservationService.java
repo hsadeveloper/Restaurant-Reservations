@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import orderservice.entity.CreateReservationRequest;
 import orderservice.entity.Link;
-import orderservice.entity.Links;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.ReservationStatus;
 import orderservice.entity.RestaurantTableEntity;
@@ -132,30 +133,29 @@ public class ReservationService {
     // Extract the response
     ReservationResponse res = response.getBody();
     HttpStatusCode statusCode = response.getStatusCode();
+    RestaurantTableEntity savedReservationObj = null;
     if (statusCode.is2xxSuccessful()) { // Better practice for checking 200 OK
-      reservationRepository.save(reservation);
-      if (statusCode.is2xxSuccessful()) {
-        reservationRepository.save(reservation);
+      savedReservationObj = reservationRepository.save(reservation);
 
-        logger.info("Successfully Saved Reservation\n" + "Status Code: {}\n" + "Customer ID: {}\n"
-            + "Reservation ID: {}", statusCode.value(), reservation.getCustomerId());
-      } else {
-        logger.error("Failed to Save Reservation\n" + "Status Code: {}\n" + "Response Body: {}",
-            statusCode.value(), response.getBody());
-      }
+      logger.info("Successfully Saved Reservation\n" + "Status Code: {}\n" + "Customer ID: {}\n"
+          + "Reservation ID: {}", statusCode.value(), reservation.getCustomerId());
+    } else {
+      logger.error("Failed to Save Reservation\n" + "Status Code: {}\n" + "Response Body: {}",
+          statusCode.value(), response.getBody());
     }
+
 
     if (res == null || res.getId() == null) {
       throw new RuntimeException(
           "Table Service returned a successful response, but the Reservation ID is missing.");
     }
 
+    Long reservid = savedReservationObj.getId();
+    ReservationStatus status = savedReservationObj.getStatus();
 
+    return new ReservationResponse(reservid.toString(), status.name(), res.getExpiresAt(),
+        Map.of("confirm", new Link("/api/reservations/" + reservid + "/confirm", "POST")));
 
-    // Map the ID safely
-    String reservationId = res.getId();
-    return new ReservationResponse(reservationId, res.getExpiresAt(),
-        new Links(new Link("/api/reservations/" + reservationId + "/confirm", "POST")));
   }
 
   public RestaurantTableEntity getReservation(Long id) {
@@ -188,11 +188,19 @@ public class ReservationService {
 
     // Update status
     reservation.setStatus(ReservationStatus.CONFIRMED);
-    reservationRepository.save(reservation);
+    RestaurantTableEntity savedReservation = reservationRepository.save(reservation);
+
+    Map<String, Link> links = new HashMap<>();
+    links.put("cancel", new Link("/api/reservations/" + id + "/cancel", "POST"));
+
 
     // Build response with _links
-    return new ReservationResponse(reservation.getCustomerId().toString(),
-        reservation.getUpdatedAt(),
-        new Links(new Link("/api/reservations/" + id + "/cancel", "POST")));
+    ReservationResponse response = new ReservationResponse();
+    response.setId(savedReservation.getCustomerId());
+    response.setExpiresAt(savedReservation.getUpdatedAt());
+    response.setStatus(savedReservation.getStatus().name());
+    response.set_links(links);
+
+    return response;
   }
 }
