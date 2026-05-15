@@ -1,28 +1,22 @@
 package tableservice.adapter.out;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
+import org.springframework.stereotype.Component;
 import tableservice.domain.TableAvailability;
+// 1. Change this import to point to the actual repository location
+import tableservice.domain.port.in.JpaAvailabilityRepository;
 
-@Repository
-public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPort {
+@Component
+public class AvailaibilityRepositoryAdapter {
 
-    // Inject the JPA repository, NOT the adapter itself
-    private final JpaAvailabilityRepository jpaRepository;
-	
-    public AvailaibilityRepositoryAdapter(JpaAvailabilityRepository jpaRepository) {
-		this.jpaRepository = jpaRepository;
-	}
+  // 2. Change the field type to match the new package path
+  private final JpaAvailabilityRepository jpaAvailabilityRepository;
 
-	@Override
-	public List<TableAvailability> findAll() {
-		return jpaRepository.findAll();
-	}
+  // 3. Update the constructor argument type
+  public AvailaibilityRepositoryAdapter(JpaAvailabilityRepository jpaAvailabilityRepository) {
+    this.jpaAvailabilityRepository = jpaAvailabilityRepository;
+  }
 
-	@Override
-	public TableAvailability save(TableAvailability table) {
-		return jpaRepository.save(table);
-	}
+  public TableAvailability save(TableAvailability availability) {
+    return jpaAvailabilityRepository.save(availability);
+  }
 }
