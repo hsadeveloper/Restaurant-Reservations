@@ -100,12 +100,19 @@ This document outlines the business rules and validation constraints for the Res
 ---
 ###
 ```
+### Another edge cases
+---
+
   6:00 ───────── 7:30   Cleanup   7:45
+
   [ Customer A ]         [15m]    [Next Guest]
 
 
+
   Existing:  6:00 -------- 7:30
+
           New:   7:00 -------- 8:00
+
                  OVERLAP
 ```
 
