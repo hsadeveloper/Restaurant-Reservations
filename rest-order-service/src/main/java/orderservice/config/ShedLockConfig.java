@@ -6,20 +6,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider; // MUST IMPORT THIS
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 
 @Configuration
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
-public class ShedLockConfig {
-
+class ShedLockConfig {
+  // Spring will never instantiate this config class directly anyway
   @Bean
-  public LockProvider lockProvider(DataSource dataSource) {
-    // Use JdbcTemplateLockProvider here
+  private LockProvider lockProvider(DataSource dataSource) {
     return new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
-        .withJdbcTemplate(new JdbcTemplate(dataSource)).usingDbTime() // This works perfectly with
-                                                                      // PostgreSQL
-        .build());
+        .withJdbcTemplate(new JdbcTemplate(dataSource)).usingDbTime().build());
   }
 }

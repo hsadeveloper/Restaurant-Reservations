@@ -1,6 +1,6 @@
 package orderservice;
 
-import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue; // REQUIRED
+import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage; // REQUIRED
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,8 @@ public class MyArchitectureTest {
   @Test
   public void layeredArchitectureIsRespected() {
     JavaClasses importedClasses = new ClassFileImporter()
-        // 1. Standard exclusion
+
         .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-        // 2. FORCE exclude your specific test files by name pattern
         .withImportOption(location -> !location.contains("Test")).importPackages("orderservice");
 
     ArchRule rule = layeredArchitecture().consideringAllDependencies().layer("controller")
