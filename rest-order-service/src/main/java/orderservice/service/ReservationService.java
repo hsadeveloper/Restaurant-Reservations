@@ -5,9 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import orderservice.entity.CreateReservationRequest;
-import orderservice.entity.Link;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.ReservationStatus;
 import orderservice.entity.RestaurantTableEntity;
@@ -153,8 +150,7 @@ public class ReservationService {
     Long reservid = savedReservationObj.getId();
     ReservationStatus status = savedReservationObj.getStatus();
 
-    return new ReservationResponse(reservid.toString(), status.name(), res.getExpiresAt(),
-        Map.of("confirm", new Link("/api/reservations/" + reservid + "/confirm", "POST")));
+    return new ReservationResponse(reservid.toString(), status.name(), res.getExpiresAt());
 
   }
 
@@ -179,28 +175,20 @@ public class ReservationService {
     RestaurantTableEntity reservation = reservationRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-
-    // ⭐ Prevent confirming already-confirmed/canceled reservations
+    // Prevent confirming already-confirmed/canceled reservations
     if (reservation.getStatus() != ReservationStatus.PENDING) {
       throw new IllegalStateException(
           "Reservation cannot be confirmed because it is " + reservation.getStatus());
     }
-
     // Update status
     reservation.setStatus(ReservationStatus.CONFIRMED);
     RestaurantTableEntity savedReservation = reservationRepository.save(reservation);
-
-    Map<String, Link> links = new HashMap<>();
-    links.put("cancel", new Link("/api/reservations/" + id + "/cancel", "POST"));
-
 
     // Build response with _links
     ReservationResponse response = new ReservationResponse();
     response.setId(savedReservation.getCustomerId());
     response.setExpiresAt(savedReservation.getUpdatedAt());
     response.setStatus(savedReservation.getStatus().name());
-    response.set_links(links);
-
     return response;
   }
 }

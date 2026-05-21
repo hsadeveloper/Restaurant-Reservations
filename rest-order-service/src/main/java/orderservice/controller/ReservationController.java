@@ -1,7 +1,11 @@
 package orderservice.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,22 +44,39 @@ public class ReservationController {
 
 
   @PostMapping("/{id}/confirm")
-  public ResponseEntity<ReservationResponse> confirmReservation(@PathVariable("id") Long id) {
+  public ResponseEntity<EntityModel<ReservationResponse>> confirmReservation(
+      @PathVariable("id") Long id) {
+
     ReservationResponse response = reservationService.confirm(id);
 
-    return ResponseEntity.ok(response);
+    EntityModel<ReservationResponse> model = EntityModel.of(response,
+        // action link
+        linkTo(methodOn(ReservationController.class).confirmReservation(id)).withRel("confirm"));
+
+    return ResponseEntity.ok(model);
   }
 
 
   @GetMapping("/{id}")
-  public ResponseEntity<RestaurantTableEntity> getReservation(@PathVariable("id") Long id) {
+  public ResponseEntity<EntityModel<RestaurantTableEntity>> getReservation(
+      @PathVariable("id") Long id) {
+
     RestaurantTableEntity response = reservationService.getReservation(id);
-    return ResponseEntity.ok(response);
+
+    EntityModel<RestaurantTableEntity> model = EntityModel.of(response,
+        linkTo(methodOn(ReservationController.class).confirmReservation(id)).withRel("confirm"));
+
+    return ResponseEntity.ok(model);
   }
 
   @GetMapping("/all")
-  public ResponseEntity<List<RestaurantTableEntity>> getAllReservation() {
+  public ResponseEntity<CollectionModel<RestaurantTableEntity>> getAllReservation() {
     List<RestaurantTableEntity> response = reservationService.getAllReservation();
-    return ResponseEntity.ok(response);
+
+    CollectionModel<RestaurantTableEntity> model = CollectionModel.of(response,
+
+        linkTo(methodOn(ReservationController.class).getAllReservation()).withSelfRel());
+
+    return ResponseEntity.ok(model);
   }
 }

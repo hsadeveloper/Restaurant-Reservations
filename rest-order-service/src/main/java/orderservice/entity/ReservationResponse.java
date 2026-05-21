@@ -1,13 +1,11 @@
 package orderservice.entity;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 
 public class ReservationResponse {
 
   private String Id;
-  private Map<String, Link> _links;
   private LocalDateTime expiresAt;
   private String status;
 
@@ -17,19 +15,17 @@ public class ReservationResponse {
   }
 
 
-  public ReservationResponse(String id, String reservationStatus, LocalDateTime expiresAt,
-      Map<String, Link> _links) {
+  public ReservationResponse(String id, String reservationStatus, LocalDateTime expiresAt) {
     this.Id = id;
     this.status = reservationStatus;
     this.expiresAt = expiresAt;
-    this._links = _links;
+
   }
 
 
 
-  public ReservationResponse(Map<String, Link> _links, LocalDateTime expiresAt) {
+  public ReservationResponse(LocalDateTime expiresAt) {
     super();
-    this._links = _links;
     this.expiresAt = expiresAt;
   }
 
@@ -41,17 +37,6 @@ public class ReservationResponse {
 
   public void setId(String id) {
     Id = id;
-  }
-
-
-
-  public Map<String, Link> get_links() {
-    return _links;
-  }
-
-
-  public void set_links(Map<String, Link> _links) {
-    this._links = _links;
   }
 
 
@@ -78,7 +63,7 @@ public class ReservationResponse {
   @Override
   public String toString() {
     return "ReservationResponse [Id=" + String.valueOf(Id) + ", status=" + String.valueOf(status)
-        + ", _links=" + String.valueOf(_links) + ", expiresAt=" + String.valueOf(expiresAt) + "]";
+        + ", expiresAt=" + String.valueOf(expiresAt) + "]";
   }
 
 
