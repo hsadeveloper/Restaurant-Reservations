@@ -2,3 +2,6 @@ rest-order-service/.DS_Store
 rest-table-service/src/main/.DS_Store
 .DS_Store
 .DS_Store
+rest-order-service/postgres_data/base/16384/1259
+/rest-order-service/postgres_data/base
+/rest-order-service/postgres_data
