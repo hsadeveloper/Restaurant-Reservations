@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import orderservice.entity.CreateReservationRequest;
+import orderservice.entity.ReservationRequestDTO;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.RestaurantTableEntity;
 import orderservice.service.ReservationService;
@@ -29,15 +29,15 @@ public class ReservationController {
 
   @PostMapping
   public ResponseEntity<ReservationResponse> createReservation(
-      @RequestBody CreateReservationRequest request) {
+      @RequestBody ReservationRequestDTO requestDTO) {
 
-    ReservationResponse response = reservationService.createReservation(request);
+    ReservationResponse response = reservationService.createReservation(requestDTO);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @PostMapping("/")
   public ResponseEntity<ReservationResponse> createReservation1(
-      @RequestBody CreateReservationRequest request) {
+      @RequestBody ReservationRequestDTO request) {
     ReservationResponse response = reservationService.createReservation(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
@@ -50,7 +50,6 @@ public class ReservationController {
     ReservationResponse response = reservationService.confirm(id);
 
     EntityModel<ReservationResponse> model = EntityModel.of(response,
-        // action link
         linkTo(methodOn(ReservationController.class).confirmReservation(id)).withRel("confirm"));
 
     return ResponseEntity.ok(model);
@@ -76,7 +75,6 @@ public class ReservationController {
     CollectionModel<RestaurantTableEntity> model = CollectionModel.of(response,
 
         linkTo(methodOn(ReservationController.class).getAllReservation()).withSelfRel());
-
     return ResponseEntity.ok(model);
   }
 }

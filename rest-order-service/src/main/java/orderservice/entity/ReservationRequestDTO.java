@@ -3,19 +3,18 @@ package orderservice.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class CreateReservationRequest {
+public class ReservationRequestDTO {
 
   private LocalDate date;
   private LocalTime time;
   private int partySize;
   private String customerId;
 
-  public CreateReservationRequest() {
+  public ReservationRequestDTO() {
     super();
   }
 
-  public CreateReservationRequest(LocalDate date, LocalTime time, int partySize,
-      String customerId) {
+  public ReservationRequestDTO(LocalDate date, LocalTime time, int partySize, String customerId) {
     super();
     this.date = date;
     this.time = time;

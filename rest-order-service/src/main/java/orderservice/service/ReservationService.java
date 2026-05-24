@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import orderservice.entity.CreateReservationRequest;
+import orderservice.entity.ReservationRequestDTO;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.ReservationStatus;
 import orderservice.entity.RestaurantTableEntity;
@@ -56,7 +56,7 @@ public class ReservationService {
    */
 
 
-  public ReservationResponse createReservation(CreateReservationRequest request) {
+  public ReservationResponse createReservation(ReservationRequestDTO request) {
     // ✅ Combine date and time to get a LocalDateTime
     ZoneId zone = ZoneId.of("America/Chicago");
     ZonedDateTime reservationTime =

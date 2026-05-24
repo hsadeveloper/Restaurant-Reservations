@@ -13,9 +13,8 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
 class ShedLockConfig {
-  // Spring will never instantiate this config class directly anyway
   @Bean
-  private LockProvider lockProvider(DataSource dataSource) {
+  public LockProvider lockProvider(DataSource dataSource) {
     return new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
         .withJdbcTemplate(new JdbcTemplate(dataSource)).usingDbTime().build());
   }
