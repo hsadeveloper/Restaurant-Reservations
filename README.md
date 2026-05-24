@@ -1,8 +1,13 @@
 ## Resturant Table Reservation
 ---
+How about CQRS pattern https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/cqrs-pattern.html
+How about a short-term living cache?
+How about caching the status in a different table? How do multiple users try to check the status of multiple tables without crashing? 
 
 
 
+
+---
 ## 🎯 Goal
 When a customer requests a reservation (date, time, party size), Order Service asks Table Service if a table is available.
 If available, a pending reservation is created and must be confirmed within a time limit; otherwise it’s auto-canceled.
