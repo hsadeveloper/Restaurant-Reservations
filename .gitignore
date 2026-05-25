@@ -5,3 +5,4 @@ rest-table-service/src/main/.DS_Store
 rest-order-service/postgres_data/base/16384/1259
 /rest-order-service/postgres_data/base
 /rest-order-service/postgres_data
+/rest-table-service /postgres_data
