@@ -1,5 +1,3 @@
-version: '3.1'
-
 services:
   postgresql:
     image: postgres:15
@@ -8,8 +6,11 @@ services:
     ports:
       - "5435:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  # named volume, not ./
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: table
+
+volumes:
+  postgres_data:
