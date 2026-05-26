@@ -1,4 +1,4 @@
-package tableservice.domain;
+package tableservice.adapter.out.persistence;
 
 import java.time.LocalDateTime;
 

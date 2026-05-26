@@ -1,4 +1,4 @@
-package tableservice.domain;
+package tableservice.adapter.out.persistence;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
