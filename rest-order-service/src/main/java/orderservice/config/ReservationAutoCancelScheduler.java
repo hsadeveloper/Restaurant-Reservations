@@ -42,12 +42,14 @@ public class ReservationAutoCancelScheduler {
     List<RestaurantTableEntity> pendingReservations =
         reservationRepository.findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, cutoff);
 
-
-    for (RestaurantTableEntity reservation : pendingReservations) {
+    // change
+    pendingReservations.forEach(reservation -> {
       reservation.setStatus(ReservationStatus.CANCELED);
       reservationRepository.save(reservation);
       logger.info("Auto-canceled reservation id=" + reservation.toString());
-    }
+
+    });
+
   }
 }
 
