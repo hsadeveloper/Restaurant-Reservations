@@ -17,22 +17,17 @@ import orderservice.repository.ReservationRepository;
 @Component
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "5m")
-public class ReservationAutoCancelScheduler {
+class ReservationAutoCancelScheduler {
 
   private static final Logger logger =
       LoggerFactory.getLogger(ReservationAutoCancelScheduler.class);
-
-  /*
-   * To ensure your Java app and PostgreSQL speak the same "time language," pdate your scheduler to
-   * use UTC explicitly:
-   */
 
   @Autowired
   private ReservationRepository reservationRepository;
 
   @Scheduled(fixedRate = 60000) // Run every minute for testing
   @SchedulerLock(name = "cancel_pending_reservation", lockAtMostFor = "5m")
-  public void cancelPendingReservations() {
+  void cancelPendingReservations() {
 
     logger.info(">>> SCHEDULER TRIGGERED <<<\n" + "Process: Reservation Consistency Check\n"
         + "Time:    {}\n", LocalDateTime.now(java.time.ZoneOffset.UTC));
@@ -42,7 +37,7 @@ public class ReservationAutoCancelScheduler {
     List<RestaurantTableEntity> pendingReservations =
         reservationRepository.findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, cutoff);
 
-    // change
+
     pendingReservations.forEach(reservation -> {
       reservation.setStatus(ReservationStatus.CANCELED);
       reservationRepository.save(reservation);
