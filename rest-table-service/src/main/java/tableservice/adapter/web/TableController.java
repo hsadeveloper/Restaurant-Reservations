@@ -2,6 +2,7 @@ package tableservice.adapter.web;
 // adapter.in
 
 import java.util.List;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import tableservice.api.TableDefinitionDTO;
 @RequestMapping("/api/tables")
 public class TableController {
 
-  private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
+  private static final Logger logger = LoggerFactory.getLogger(TableController.class);
 
   private final TableDefinitionService tableService;
 
