@@ -1,9 +1,10 @@
 package tableservice.port.out;
 
 import java.util.List;
-import tableservice.adapter.out.persistence.TableDefinition;
+import tableservice.api.TableDefinitionDTO;
+
 
 public interface TableDefinitionRepository {
 
-  List<TableDefinition> findAll();
+  List<TableDefinitionDTO> findAll();
 }

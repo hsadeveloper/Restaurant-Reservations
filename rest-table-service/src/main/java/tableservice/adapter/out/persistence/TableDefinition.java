@@ -6,10 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import tableservice.api.TableDefinitionDTO;
 
 @Entity
 @Table(name = "table_definition") // matches DB table name
-class TableDefinition {
+public class TableDefinition {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,7 @@ class TableDefinition {
     this.capacity = capacity;
   }
 
+
   public Long getId() {
     return id;
   }
@@ -42,7 +44,9 @@ class TableDefinition {
   }
 
 
-  tableservice.api.TableDefinition toDto() {
-    return new tableservice.api.TableDefinition();
+  public TableDefinitionDTO toDto() {
+
+    return new TableDefinitionDTO(this.tableId, this.capacity);
   }
+
 }
