@@ -9,3 +9,4 @@ rest-table-service /src/main/java/tableservice/.DS_Store
 /rest-order-service/postgres_data
 rest-order-service/postgres_data/pg_wal/000000010000000000000001
 rest-table-service/.DS_Store
+rest-order-service/postgres_data/postmaster.pid

@@ -1,4 +1,4 @@
-package tableservice.adapter.out.persistence;
+package tableservice.domain;
 
 public enum ReservationStatus {
     PENDING, CONFIRMED, CANCELED, AUTO_CANCELED, AVAILABLE

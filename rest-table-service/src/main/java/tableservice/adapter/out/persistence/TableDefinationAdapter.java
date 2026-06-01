@@ -25,7 +25,10 @@ class TableDefinitionAdapter implements TableDefinitionRepositoryPort {
 
   @Override
   public List<TableDefinitionDTO> findBySize(int size) {
-    return jpaRepository.findByCapacity(size).stream().map(TableDefinition::toDto).toList();
+
+    List<TableDefinitionDTO> results =
+        jpaRepository.findByCapacity(size).stream().map(TableDefinition::toDto).toList();
+    return results != null ? results : List.of();
   }
 
 

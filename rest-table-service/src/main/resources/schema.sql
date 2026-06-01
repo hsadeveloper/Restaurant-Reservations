@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS table_availability;
+DROP TABLE IF EXISTS table_definition;
+
 CREATE TABLE IF NOT EXISTS table_definition (
     id      SERIAL PRIMARY KEY,
     table_id VARCHAR(10) NOT NULL UNIQUE,  -- UNIQUE enables ON CONFLICT

@@ -3,6 +3,7 @@ package tableservice.adapter.out.persistence;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import tableservice.domain.ReservationStatus;
 
 public class RestaurantTable {
 	

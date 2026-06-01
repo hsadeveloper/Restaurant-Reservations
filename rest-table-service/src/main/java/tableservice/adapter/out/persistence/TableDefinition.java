@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import tableservice.api.TableDefinitionDTO;
 
 @Entity
-@Table(name = "table_definition") // matches DB table name
+@Table(name = "table_definition")
 public class TableDefinition {
 
   @Id
