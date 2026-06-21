@@ -24,6 +24,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    // rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.amqp:spring-rabbit-stream'
 
     // --- Optional for local development ---
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
@@ -32,10 +36,12 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-
+    
+    testImplementation 'org.testcontainers:rabbitmq:1.20.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
     testImplementation 'org.testcontainers:postgresql:1.20.3'
     testImplementation 'org.testcontainers:testcontainers:1.20.3'
+    
 
     // Optional: JUnit platform launcher
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

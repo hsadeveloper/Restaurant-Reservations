@@ -12,5 +12,23 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: table
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"     # AMQP 0-9-1
+      - "15672:15672"   # Management UI
+      - "5552:5552"     # Streams protocol
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    command: >
+      bash -c "rabbitmq-plugins enable rabbitmq_stream rabbitmq_stream_management &&
+               rabbitmq-server"
+
 volumes:
   postgres_data:
+  rabbitmq_data:
