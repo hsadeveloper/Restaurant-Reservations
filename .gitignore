@@ -12,3 +12,5 @@ rest-table-service/.DS_Store
 rest-order-service/postgres_data/postmaster.pid
 .DS_Store
 /rest-table-service/postgres_data
+/rest-order-service/postgres_data.broken
+/rest-table-service/postgres_data.broken
