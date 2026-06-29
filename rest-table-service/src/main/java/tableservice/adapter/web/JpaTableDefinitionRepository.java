@@ -9,5 +9,6 @@ import tableservice.adapter.out.persistence.TableDefinition;
 @Repository
 
 interface JpaTableDefinitionRepository extends JpaRepository<TableDefinition, Long> {
+
   List<TableDefinition> findByCapacity(int capacity);
 }

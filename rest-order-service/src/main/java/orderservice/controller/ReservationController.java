@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -31,11 +30,16 @@ public class ReservationController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReservationController.class);
 
-  @Autowired
   private ReservationService reservationService;
 
-  @Autowired
   private RabbitTemplate rabbitTemplate;
+
+  public ReservationController(ReservationService reservationService,
+      RabbitTemplate rabbitTemplate) {
+    super();
+    this.reservationService = reservationService;
+    this.rabbitTemplate = rabbitTemplate;
+  }
 
   @GetMapping("/poll")
   public ResponseEntity<List<ReservationResponse>> pollMessage1() {

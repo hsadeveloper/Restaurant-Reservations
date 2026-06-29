@@ -146,6 +146,7 @@ public class ReservationService {
 
     // 🚀 Publish an Asynchronous Event to RabbitMQ (Fire-and-forget)
     try {
+      // = "order.exchange", "order.created"
       logger.info("Publishing reservation event to RabbitMQ for Order Queue...");
       rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME_2, // "order.exchange"
           RabbitConfig.ROUTING_KEY_2, // "order.created"

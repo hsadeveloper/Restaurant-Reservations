@@ -1,10 +1,11 @@
-package orderservice.config;
+package tableservice.configuration;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory; // ✅ ADDED
+// IMPORT
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfig {
+public class RabbitQueueConfig {
 
   public static final String QUEUE_NAME = "restaurant.queue";
   public static final String EXCHANGE_NAME = "restaurant.exchange";
@@ -23,6 +24,9 @@ public class RabbitConfig {
   public static final String EXCHANGE_NAME_2 = "order.exchange";
   public static final String ROUTING_KEY_2 = "order.created";
 
+  // ==========================================
+  // 1. FIRST QUEUE & EXCHANGE CONFIGURATION
+  // ==========================================
   @Bean
   public Queue ordersQueue() {
     return new Queue(QUEUE_NAME, true);
@@ -38,29 +42,36 @@ public class RabbitConfig {
     return BindingBuilder.bind(ordersQueue()).to(ordersExchange()).with(ROUTING_KEY);
   }
 
-  @Bean
-  public MessageConverter jsonMessageConverter() {
-    // ✅ FIXED: Using the modern, non-deprecated converter class name
-    return new JacksonJsonMessageConverter();
-  }
-
-  // ✅ ADD THIS: Safely creates the exchange inside RabbitMQ if it does not exist yet
-  @Bean
-  public TopicExchange secondExchange() {
-    return new TopicExchange(EXCHANGE_NAME_2);
-  }
-
-  // ✅ ADD THIS: Safely creates the queue inside RabbitMQ if it does not exist yet
+  // ==========================================
+  // 2. SECOND QUEUE & EXCHANGE CONFIGURATION
+  // ==========================================
   @Bean
   public Queue secondQueue() {
     return new Queue(QUEUE_NAME_2, true);
   }
 
-  // ✅ ADD THIS: Binds them together automatically on startup
+  @Bean
+  public TopicExchange secondExchange() {
+    return new TopicExchange(EXCHANGE_NAME_2);
+  }
+
   @Bean
   public Binding secondBinding() {
     return BindingBuilder.bind(secondQueue()).to(secondExchange()).with(ROUTING_KEY_2);
   }
+
+  // ==========================================
+  // 3. MESSAGE CONVERSION & TEMPLATE CONFIG
+  // ==========================================
+
+
+  // ... Inside your RabbitQueueConfig class ...
+
+  @Bean
+  public MessageConverter jsonMessageConverter() {
+    return new JacksonJsonMessageConverter();
+  }
+
 
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
@@ -69,12 +80,25 @@ public class RabbitConfig {
     return template;
   }
 
+  // ==========================================
+  // 4. AUTOMATIC LISTENER FACTORY COUPLING
+  // ==========================================
   @Bean
   public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-      ConnectionFactory connectionFactory) {
+      ConnectionFactory connectionFactory, MessageConverter jsonMessageConverter) {
+
     SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
     factory.setConnectionFactory(connectionFactory);
-    factory.setMessageConverter(jsonMessageConverter());
+
+    // ✅ CRITICAL: Links your JSON mapper to the background @RabbitListener annotation loops
+    factory.setMessageConverter(jsonMessageConverter);
+
     return factory;
+  }
+
+  @Override
+  public String toString() {
+    return "RabbitMQConfig [jsonQueues()=" + secondQueue() + ", exchange()=" + secondExchange()
+        + "]";
   }
 }

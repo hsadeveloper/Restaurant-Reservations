@@ -14,7 +14,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "RestaurantTableEntity")
+@Table(name = "restaurant_table_entity")
 public class RestaurantTableEntity {
 
   @Id

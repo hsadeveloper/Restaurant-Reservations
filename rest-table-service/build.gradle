@@ -25,24 +25,25 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     
+    // Spring Boot JSON support (prevents JsonMapper NoClassDefFoundError)
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
     // rabbitmq
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.amqp:spring-rabbit-stream'
 
-    // --- Optional for local development ---
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+    // --- REMOVED developmentOnly spring-boot-docker-compose to prevent port 15673 conflicts ---
 
     // --- Test dependencies ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    
     testImplementation 'org.testcontainers:rabbitmq:1.20.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
     testImplementation 'org.testcontainers:postgresql:1.20.3'
     testImplementation 'org.testcontainers:testcontainers:1.20.3'
     
-
     // Optional: JUnit platform launcher
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

@@ -1,9 +1,10 @@
 package tableservice;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 import tableservice.adapter.out.persistence.TableAvailability;
 import tableservice.api.ReservationResponse;
+import tableservice.domain.ReservationStatus;
 
 public interface AvailabilityRepositoryPort {
 
@@ -13,7 +14,10 @@ public interface AvailabilityRepositoryPort {
 
   List<TableAvailability> findBestFitCapacity(int size);
 
-  ResponseEntity<ReservationResponse> checkAvailability();
+  List<ReservationResponse> checkAvailability();
+
+  List<TableAvailability> findByStatusAndCreatedAtBefore(ReservationStatus status,
+      LocalDateTime time);
 
 
 

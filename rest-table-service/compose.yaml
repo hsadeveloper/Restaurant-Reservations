@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:15
+    container_name: rest-table
+    restart: always
+    ports:
+      - "5435:5432" # Maps host machine 5435 to container 5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: 
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rest-table-mq
+    restart: always
+    ports:
+      - "5675:5672"   # FIXED: Changed from 5673 to 5675 to prevent collisions
+      - "15675:15672" # FIXED: Changed from 15673 to 15675 for Management Dashboard
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

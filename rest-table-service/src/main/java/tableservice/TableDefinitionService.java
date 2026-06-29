@@ -66,7 +66,11 @@ public class TableDefinitionService {
     return availRepositoryPort.findBestFitCapacity(partySize);
   }
 
+
+
   public ReservationResponse checkAvailability(TableAvailabilityRequest request) {
+
+
 
     logger.info("Receiving reservation from rest-order: " + request);
 
@@ -98,7 +102,8 @@ public class TableDefinitionService {
 
     ReservationResponse response = new ReservationResponse();
     response.setId(savedObject.getId());
-    response.setStatus(savedObject.getStatus());
+    response.setStatus(savedObject.getStatus().name());
+    response.setSize(savedObject.getCapacity());
     response.setExpiresAt(LocalDateTime
         .of(savedObject.getReservationDate(), savedObject.getReservationTime()).plusHours(2));
     return response;
