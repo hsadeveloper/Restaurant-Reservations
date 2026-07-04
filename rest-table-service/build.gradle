@@ -1,53 +1,65 @@
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.0'
-    id 'io.spring.dependency-management' version '1.1.7'
-}
-
-group = 'com.developer.com'
-version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    // --- Application dependencies ---
-    implementation 'org.postgresql:postgresql:42.7.3'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    
-    // Spring Boot JSON support (prevents JsonMapper NoClassDefFoundError)
-    implementation 'org.springframework.boot:spring-boot-starter-json'
-    
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    
-    // rabbitmq
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.springframework.amqp:spring-rabbit-stream'
-
-    // --- REMOVED developmentOnly spring-boot-docker-compose to prevent port 15673 conflicts ---
-
-    // --- Test dependencies ---
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:rabbitmq:1.20.3'
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
-    testImplementation 'org.testcontainers:postgresql:1.20.3'
-    testImplementation 'org.testcontainers:testcontainers:1.20.3'
-    
-    // Optional: JUnit platform launcher
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
+	plugins {
+	    id 'java'
+	    id 'org.springframework.boot' version '4.0.0'
+	    id 'io.spring.dependency-management' version '1.1.7'
+	}
+	
+	group = 'com.developer.com'
+	version = '0.0.1-SNAPSHOT'
+	description = 'Demo project for Spring Boot'
+	
+	java {
+	    toolchain {
+	        languageVersion = JavaLanguageVersion.of(25)
+	    }
+	}
+	
+	repositories {
+	    mavenCentral()
+	}
+	
+	dependencies {
+	    // --- Application dependencies ---
+	    implementation 'org.postgresql:postgresql:42.7.3'
+	    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	    implementation 'org.springframework.boot:spring-boot-starter-web'
+	    
+	    // Spring Boot JSON support (prevents JsonMapper NoClassDefFoundError)
+	    implementation 'org.springframework.boot:spring-boot-starter-json'
+	    
+	    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	    
+	    // rabbitmq
+	    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	    
+	    
+	     // redis
+	     implementation 'org.springframework.boot:spring-boot-starter-data-redis'  
+	
+	    // --- REMOVED developmentOnly spring-boot-docker-compose to prevent port 15673 conflicts ---
+	       testImplementation 'com.tngtech.archunit:archunit:1.4.2'
+	       
+	       
+	
+	    // --- Test dependencies ---
+	    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	    testImplementation 'org.testcontainers:rabbitmq:1.20.3'
+	    testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
+	    testImplementation 'org.testcontainers:postgresql:1.20.3'
+	    testImplementation 'org.testcontainers:testcontainers:1.20.3'
+	        // --- Test dependencies ---
+	    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	    
+	    
+	    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
+	    
+	    
+	    // Optional: JUnit platform launcher
+	    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	}
+	
+	tasks.named('test') {
+	    useJUnitPlatform()
+	}

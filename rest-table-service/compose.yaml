@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgresql:
     image: postgres:15
-    container_name: rest-table
+    container_name: container-table
     restart: always
     ports:
       - "5435:5432" # Maps host machine 5435 to container 5432
@@ -12,11 +12,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: 
+      POSTGRES_DB: table
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rest-table-mq
+    container_name: table-mq
     restart: always
     ports:
       - "5675:5672"   # FIXED: Changed from 5673 to 5675 to prevent collisions
@@ -24,3 +24,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis_data:
+    driver: local

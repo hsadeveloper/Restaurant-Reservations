@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS table_availability;
-DROP TABLE IF EXISTS table_definition;
+DROP TABLE IF EXISTS table_availability CASCADE;
+DROP TABLE IF EXISTS table_definition CASCADE;
 
 CREATE TABLE IF NOT EXISTS table_definition (
     id SERIAL PRIMARY KEY,

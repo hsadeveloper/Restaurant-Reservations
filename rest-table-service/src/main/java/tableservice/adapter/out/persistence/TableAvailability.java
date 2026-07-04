@@ -52,6 +52,7 @@ public class TableAvailability {
     this.status = status;
   }
 
+
   public TableAvailability(String customerId, int capacity, ReservationStatus status,
       LocalDate reservationDate, LocalTime reservationTime) {
     this.customerId = customerId;
@@ -60,6 +61,8 @@ public class TableAvailability {
     this.reservationDate = reservationDate;
     this.reservationTime = reservationTime;
   }
+
+
 
   public Long getId() {
     return id;
