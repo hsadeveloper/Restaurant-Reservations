@@ -1,12 +1,13 @@
 package orderservice.entity;
 
 import java.time.LocalDateTime;
+import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReservationResponse {
+public class ReservationResponse extends RepresentationModel<ReservationResponse> {
 
   @JsonProperty("id")
   @JsonAlias({"Id", "ID"})

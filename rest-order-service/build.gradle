@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.6'
+    id 'org.springframework.boot' version '4.1.0'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -31,20 +31,23 @@ dependencies {
     
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     
+    
+     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
      implementation 'org.springframework.boot:spring-boot-starter-json'
+     
+     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+     
 
     // EXPLICIT FORCED UPGRADES TO PREVENT RUNTIME NO_CLASS_DEF_FOUND_ERRORS
     implementation 'com.fasterxml.jackson.core:jackson-core:2.18.2'
-
     runtimeOnly 'org.postgresql:postgresql'
-
     testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
-
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

@@ -19,9 +19,9 @@ public class RabbitConfig {
   public static final String EXCHANGE_NAME = "restaurant.exchange";
   public static final String ROUTING_KEY = "restaurant.created";
 
-  public static final String QUEUE_NAME_2 = "order.queue";
-  public static final String EXCHANGE_NAME_2 = "order.exchange";
-  public static final String ROUTING_KEY_2 = "order.created";
+  ////  public static final String QUEUE_NAME_2 = "order.queue";
+  // public static final String EXCHANGE_NAME_2 = "order.exchange";
+  // public static final String ROUTING_KEY_2 = "order.created";
 
   @Bean
   public Queue ordersQueue() {
@@ -45,22 +45,22 @@ public class RabbitConfig {
   }
 
   // ✅ ADD THIS: Safely creates the exchange inside RabbitMQ if it does not exist yet
-  @Bean
-  public TopicExchange secondExchange() {
-    return new TopicExchange(EXCHANGE_NAME_2);
-  }
-
-  // ✅ ADD THIS: Safely creates the queue inside RabbitMQ if it does not exist yet
-  @Bean
-  public Queue secondQueue() {
-    return new Queue(QUEUE_NAME_2, true);
-  }
-
-  // ✅ ADD THIS: Binds them together automatically on startup
-  @Bean
-  public Binding secondBinding() {
-    return BindingBuilder.bind(secondQueue()).to(secondExchange()).with(ROUTING_KEY_2);
-  }
+  // @Bean
+  // public TopicExchange secondExchange() {
+  // return new TopicExchange(EXCHANGE_NAME_2);
+  // }
+  //
+  // // ✅ ADD THIS: Safely creates the queue inside RabbitMQ if it does not exist yet
+  // @Bean
+  // public Queue secondQueue() {
+  // return new Queue(QUEUE_NAME_2, true);
+  // }
+  //
+  // // ✅ ADD THIS: Binds them together automatically on startup
+  // @Bean
+  // public Binding secondBinding() {
+  // return BindingBuilder.bind(secondQueue()).to(secondExchange()).with(ROUTING_KEY_2);
+  // }
 
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {

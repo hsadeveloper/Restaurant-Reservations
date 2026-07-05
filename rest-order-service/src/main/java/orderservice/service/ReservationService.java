@@ -148,12 +148,12 @@ public class ReservationService {
     try {
       // = "order.exchange", "order.created"
       logger.info("Publishing reservation event to RabbitMQ for Order Queue...");
-      rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME_2, // "order.exchange"
-          RabbitConfig.ROUTING_KEY_2, // "order.created"
+      rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, // "order.exchange"
+          RabbitConfig.ROUTING_KEY, // "order.created"
           finalResponse // Transports the populated object layout safely
       );
       logger.info("Successfully sent message event payload to RabbitMQ exchange: {}",
-          RabbitConfig.EXCHANGE_NAME_2);
+          RabbitConfig.EXCHANGE_NAME);
     } catch (Exception amqpEx) {
       // Keeps primary data transaction intact if messaging middleware loses connectivity
       logger.error("Database transaction succeeded but RabbitMQ transmission failed!", amqpEx);

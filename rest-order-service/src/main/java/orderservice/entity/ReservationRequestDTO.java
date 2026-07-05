@@ -2,10 +2,14 @@ package orderservice.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ReservationRequestDTO {
 
+  @JsonFormat(pattern = "YYYY-MM-dd")
   private LocalDate date;
+
+  @JsonFormat(pattern = "HH:mm:ss")
   private LocalTime time;
   private int partySize;
   private String customerId;
@@ -21,7 +25,6 @@ public class ReservationRequestDTO {
     this.partySize = partySize;
     this.customerId = customerId;
   }
-
 
   public LocalDate getDate() {
     return date;
