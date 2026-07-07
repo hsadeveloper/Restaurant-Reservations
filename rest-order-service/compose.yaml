@@ -10,15 +10,4 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: restaurants
 
-  rabbitmq:
-    image: rabbitmq:4-management
-    container_name: rest-order-rabbitmq
-    restart: always
-    ports:
-      - "5673:5672"
-      - "15673:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  

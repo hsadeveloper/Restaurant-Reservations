@@ -1,5 +1,7 @@
 package orderservice.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -7,21 +9,28 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import orderservice.entity.ReservationResponse;
+import orderservice.entity.TableAvailabilityRequest;
+import orderservice.repository.ReservationRepository;
+
 
 @Configuration
 public class RabbitConfig {
+
+  private final ReservationRepository reservationRepository;
 
   public static final String QUEUE_NAME = "restaurant.queue";
   public static final String EXCHANGE_NAME = "restaurant.exchange";
   public static final String ROUTING_KEY = "restaurant.created";
 
-  ////  public static final String QUEUE_NAME_2 = "order.queue";
-  // public static final String EXCHANGE_NAME_2 = "order.exchange";
-  // public static final String ROUTING_KEY_2 = "order.created";
+  RabbitConfig(ReservationRepository reservationRepository) {
+    this.reservationRepository = reservationRepository;
+  }
 
   @Bean
   public Queue ordersQueue() {
@@ -39,30 +48,6 @@ public class RabbitConfig {
   }
 
   @Bean
-  public MessageConverter jsonMessageConverter() {
-    // ✅ FIXED: Using the modern, non-deprecated converter class name
-    return new JacksonJsonMessageConverter();
-  }
-
-  // ✅ ADD THIS: Safely creates the exchange inside RabbitMQ if it does not exist yet
-  // @Bean
-  // public TopicExchange secondExchange() {
-  // return new TopicExchange(EXCHANGE_NAME_2);
-  // }
-  //
-  // // ✅ ADD THIS: Safely creates the queue inside RabbitMQ if it does not exist yet
-  // @Bean
-  // public Queue secondQueue() {
-  // return new Queue(QUEUE_NAME_2, true);
-  // }
-  //
-  // // ✅ ADD THIS: Binds them together automatically on startup
-  // @Bean
-  // public Binding secondBinding() {
-  // return BindingBuilder.bind(secondQueue()).to(secondExchange()).with(ROUTING_KEY_2);
-  // }
-
-  @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
     RabbitTemplate template = new RabbitTemplate(connectionFactory);
     template.setMessageConverter(jsonMessageConverter());
@@ -77,4 +62,25 @@ public class RabbitConfig {
     factory.setMessageConverter(jsonMessageConverter());
     return factory;
   }
+
+  @Bean
+  public MessageConverter jsonMessageConverter() {
+    System.out.println("inside sender message converter");
+    JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter("*");
+    DefaultClassMapper classMapper = new DefaultClassMapper();
+    classMapper.setTrustedPackages("*");
+
+    Map<String, Class<?>> idClassMap = new HashMap<>();
+    idClassMap.put("table-request", TableAvailabilityRequest.class);
+    idClassMap.put("reservation-response", ReservationResponse.class);
+
+    // ✅ CRITICAL FALLBACK: If the receiver sends its raw class string, intercept and force-map it
+    // here
+    idClassMap.put("tableservice.api.ReservationResponse", ReservationResponse.class);
+
+    classMapper.setIdClassMapping(idClassMap);
+    converter.setClassMapper(classMapper);
+    return converter;
+  }
+
 }

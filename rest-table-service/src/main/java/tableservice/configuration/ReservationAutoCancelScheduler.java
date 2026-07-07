@@ -37,15 +37,14 @@ class ReservationAutoCancelScheduler {
   }
 
 
-  @Scheduled(fixedRate = 30 * 60 * 1000)
+  @Scheduled(fixedRate = 3 * 60 * 1000)
   void pullAvailableTable() {
 
     try {
       List<ReservationResponse> tables = availaibilityRepositoryAdapter.checkAvailability();
 
       String json = objectMapper.writeValueAsString(tables);
-
-      redisTemplate.convertAndSend("available-tables", json);
+      redisTemplate.opsForValue().set("cached-available-tables", json);
 
     } catch (Exception e) {
       logger.error("Failed to publish to Redis", e);

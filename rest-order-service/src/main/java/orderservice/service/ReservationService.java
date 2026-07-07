@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import orderservice.config.RabbitConfig;
@@ -110,56 +108,63 @@ public class ReservationService {
 
     logger.info("Sending availability check payload via HTTP: \n{}", availabilityRequest);
 
-    // Call Table Service via RestTemplate HTTP POST (Synchronous verification)
-    ResponseEntity<ReservationResponse> response =
-        restTemplate.postForEntity("http://localhost:1987/api/tables/availability",
-            availabilityRequest, ReservationResponse.class);
+    // // Call Table Service via RestTemplate HTTP POST (Synchronous verification)
+    // ResponseEntity<ReservationResponse> response =
+    // restTemplate.postForEntity("http://localhost:1987/api/tables/availability",
+    // availabilityRequest, ReservationResponse.class);
+    //
+    // ReservationResponse res = response.getBody();
+    // HttpStatusCode statusCode = response.getStatusCode();
+    // RestaurantTableEntity savedReservationObj = null;
+    //
+    // if (statusCode.is2xxSuccessful() && res != null) {
+    // // Build and save local DB entity
+    // RestaurantTableEntity reservation = new RestaurantTableEntity(request.getCustomerId(),
+    // request.getTime(), request.getDate(), request.getPartySize());
+    //
+    // savedReservationObj = reservationRepository.save(reservation);
+    // logger.info("Successfully Saved Reservation Local ID: {}, Customer ID: {}",
+    // savedReservationObj.getId(), reservation.getCustomerId());
+    // } else {
+    // logger.error("Failed to process table assignment. HTTP Status Code: {}", statusCode.value());
+    // throw new RuntimeException("Table Service table assignment failed.");
+    // }
+    //
+    // if (res.getId() == null) {
+    // throw new RuntimeException(
+    // "Table Service returned a successful response, but the Reservation ID is missing.");
+    // }
 
-    ReservationResponse res = response.getBody();
-    HttpStatusCode statusCode = response.getStatusCode();
-    RestaurantTableEntity savedReservationObj = null;
+    // Long reservid = savedReservationObj.getId();
+    // ReservationStatus status = savedReservationObj.getStatus();
 
-    if (statusCode.is2xxSuccessful() && res != null) {
-      // Build and save local DB entity
-      RestaurantTableEntity reservation = new RestaurantTableEntity(request.getCustomerId(),
-          request.getTime(), request.getDate(), request.getPartySize());
+    ////    // Create the final response object utilizing the matching constructor fields
+    // ReservationResponse finalResponse = new ReservationResponse(reservid, status.name(),
+    // res.getExpiresAt(), request.getPartySize());
 
-      savedReservationObj = reservationRepository.save(reservation);
-      logger.info("Successfully Saved Reservation Local ID: {}, Customer ID: {}",
-          savedReservationObj.getId(), reservation.getCustomerId());
-    } else {
-      logger.error("Failed to process table assignment. HTTP Status Code: {}", statusCode.value());
-      throw new RuntimeException("Table Service table assignment failed.");
-    }
-
-    if (res.getId() == null) {
-      throw new RuntimeException(
-          "Table Service returned a successful response, but the Reservation ID is missing.");
-    }
-
-    Long reservid = savedReservationObj.getId();
-    ReservationStatus status = savedReservationObj.getStatus();
-
-    // Create the final response object utilizing the matching constructor fields
-    ReservationResponse finalResponse = new ReservationResponse(reservid, status.name(),
-        res.getExpiresAt(), request.getPartySize());
-
+    ReservationResponse reservationResponseponse = null;
     // 🚀 Publish an Asynchronous Event to RabbitMQ (Fire-and-forget)
     try {
       // = "order.exchange", "order.created"
       logger.info("Publishing reservation event to RabbitMQ for Order Queue...");
-      rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, // "order.exchange"
-          RabbitConfig.ROUTING_KEY, // "order.created"
-          finalResponse // Transports the populated object layout safely
-      );
+      reservationResponseponse =
+          (ReservationResponse) rabbitTemplate.convertSendAndReceive(RabbitConfig.EXCHANGE_NAME, // "order.exchange"
+              RabbitConfig.ROUTING_KEY, // "order.created"
+              availabilityRequest);
       logger.info("Successfully sent message event payload to RabbitMQ exchange: {}",
           RabbitConfig.EXCHANGE_NAME);
+      if (reservationResponseponse != null) {
+        logger.info(" [SENDER] Got reply back! Status: " + reservationResponseponse.toString());
+      } else {
+        logger.info(" [SENDER] Request timed out!");
+      }
     } catch (Exception amqpEx) {
       // Keeps primary data transaction intact if messaging middleware loses connectivity
       logger.error("Database transaction succeeded but RabbitMQ transmission failed!", amqpEx);
     }
-
-    return finalResponse;
+    String status = reservationResponseponse.getStatus();
+    return new ReservationResponse(status, reservationResponseponse.getExpiresAt(),
+        reservationResponseponse.getSize());
   }
 
 
@@ -176,8 +181,6 @@ public class ReservationService {
     return reservation;
 
   }
-
-
 
   public ReservationResponse confirm(Long id) {
 

@@ -70,8 +70,6 @@ public class TableDefinitionService {
 
   public ReservationResponse checkAvailability(TableAvailabilityRequest request) {
 
-
-
     logger.info("Receiving reservation from rest-order: " + request);
 
     String customerId = request.getCustomerId();

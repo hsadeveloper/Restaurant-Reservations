@@ -24,6 +24,17 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
 
   public ReservationResponse() {}
 
+
+
+  public ReservationResponse(String status, LocalDateTime expiresAt, int size) {
+    super();
+    this.expiresAt = expiresAt;
+    this.status = status;
+    this.size = size;
+  }
+
+
+
   public ReservationResponse(Long id, String status, LocalDateTime expiresAt, int size) {
     this.id = id;
     this.status = status;

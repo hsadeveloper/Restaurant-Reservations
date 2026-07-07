@@ -14,23 +14,6 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: table
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: table-mq
-    restart: always
-    ports:
-      - "5675:5672"   # FIXED: Changed from 5673 to 5675 to prevent collisions
-      - "15675:15672" # FIXED: Changed from 15673 to 15675 for Management Dashboard
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  redis:
-    image: redis:7.2-alpine
-    container_name: redis_cache
-    ports:
-      - "6379:6379"
-
 volumes:
   redis_data:
     driver: local
