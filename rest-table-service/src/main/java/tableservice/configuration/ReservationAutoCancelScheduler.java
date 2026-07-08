@@ -56,7 +56,6 @@ class ReservationAutoCancelScheduler {
   void cancelPendingReservations() {
     LocalDateTime cutoff = LocalDateTime.now().minusHours(1);
 
-
     List<TableAvailability> pendingReservations = availaibilityRepositoryAdapter
         .findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, cutoff);
 

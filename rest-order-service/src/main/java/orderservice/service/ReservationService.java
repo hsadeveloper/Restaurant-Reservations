@@ -150,7 +150,11 @@ public class ReservationService {
       reservationResponseponse =
           (ReservationResponse) rabbitTemplate.convertSendAndReceive(RabbitConfig.EXCHANGE_NAME, // "order.exchange"
               RabbitConfig.ROUTING_KEY, // "order.created"
-              availabilityRequest);
+              availabilityRequest, message -> {
+                // 📌 Add custom header to differentiate the request type
+                message.getMessageProperties().setHeader("request-type", "table-booking");
+                return message;
+              });
       logger.info("Successfully sent message event payload to RabbitMQ exchange: {}",
           RabbitConfig.EXCHANGE_NAME);
       if (reservationResponseponse != null) {

@@ -48,13 +48,14 @@ public class TableController {
 
   @GetMapping("/available")
   public ResponseEntity<List<ReservationResponse>> getAllavailable() {
-    logger.info("Controller --- > Get availability");
+    logger.info("/api/tables --- > Get availability");
     List<ReservationResponse> available = tableService.findTableByStatus();
     return ResponseEntity.ok(available);
   }
 
   @PostMapping("/availability")
   public ReservationResponse checkAvailability(@RequestBody TableAvailabilityRequest request) {
+    logger.info("/api/tables/availability --- > Get availability and create a pending reservation");
     return tableService.checkAvailability(request);
 
   }

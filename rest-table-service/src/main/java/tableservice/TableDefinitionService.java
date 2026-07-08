@@ -63,6 +63,8 @@ public class TableDefinitionService {
 
   public List<TableAvailability> findBestFitByCapacity(int partySize) {
 
+    logger.info("Finding a Best Fit Capacity Table: ");
+
     return availRepositoryPort.findBestFitCapacity(partySize);
   }
 
@@ -70,7 +72,8 @@ public class TableDefinitionService {
 
   public ReservationResponse checkAvailability(TableAvailabilityRequest request) {
 
-    logger.info("Receiving reservation from rest-order: " + request);
+    logger.info("Table Service Receiving Reservation Request From Rest-Order Service: "
+        + request.toString());
 
     String customerId = request.getCustomerId();
     LocalDate date = request.getDate();
@@ -84,6 +87,8 @@ public class TableDefinitionService {
     LocalDateTime startDateTime = LocalDateTime.of(date, time);
     LocalDateTime endDateTime = startDateTime.plusHours(2); // use in overlap check
 
+    logger.info("Calling findBestFitCapacity function with size {}" + partySize);
+
     List<TableAvailability> availableTables = availRepositoryPort.findBestFitCapacity(partySize);
 
     if (availableTables.isEmpty()) {
@@ -95,6 +100,7 @@ public class TableDefinitionService {
     matchedTable.setStatus(ReservationStatus.PENDING);
     matchedTable.setCustomerId(customerId);
     matchedTable.setReservationDate(date);
+
 
     TableAvailability savedObject = availRepositoryPort.save(matchedTable);
 
