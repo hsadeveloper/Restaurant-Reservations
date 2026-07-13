@@ -13,15 +13,14 @@ public class TableAvailabilityRequest {
     super();
   }
 
-  public TableAvailabilityRequest(LocalDate date, LocalTime time, Integer partySize,
-      String customerId) {
+  public TableAvailabilityRequest(String customerId, LocalDate date, LocalTime time,
+      Integer partySize) {
     super();
     this.date = date;
     this.time = time;
     this.partySize = partySize;
     this.customerId = customerId;
   }
-
 
 
   public LocalDate getDate() {

@@ -9,9 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import tableservice.AvailabilityRepositoryPort;
+import tableservice.ReservationStatus;
 import tableservice.adapter.web.JpaAvailabilityRepository;
 import tableservice.api.ReservationResponse;
-import tableservice.domain.ReservationStatus;
 
 
 
@@ -40,8 +40,7 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
   public List<ReservationResponse> findByStatus() {
 
     logger.info("inside JpaAvailabilityRepository --->");
-    List<TableAvailability> tables =
-        jpaAvailabilityRepository.findByStatus(ReservationStatus.AVAILABLE);
+    List<TableAvailability> tables = jpaAvailabilityRepository.findByStatusAndSize(4);
 
     logger.info("inside JpaAvailabilityRepository ---> " + tables);
 

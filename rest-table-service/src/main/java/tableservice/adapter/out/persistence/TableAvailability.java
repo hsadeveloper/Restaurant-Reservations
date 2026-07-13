@@ -12,7 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import tableservice.domain.ReservationStatus;
+import tableservice.ReservationStatus;
+
 
 @Entity
 @Table(name = "table_availability")

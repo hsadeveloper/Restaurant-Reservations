@@ -6,18 +6,24 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import orderservice.config.RabbitConfig;
+import org.springframework.web.context.request.async.DeferredResult;
+import orderservice.config.ReservationReplyTracker;
 import orderservice.entity.ReservationRequestDTO;
 import orderservice.entity.ReservationResponse;
 import orderservice.entity.ReservationStatus;
 import orderservice.entity.RestaurantTableEntity;
-import orderservice.entity.TableAvailabilityRequest;
 import orderservice.repository.ReservationRepository;
 
 @Service
@@ -35,7 +41,10 @@ public class ReservationService {
 
 
   @Autowired
-  private RabbitTemplate rabbitTemplate;
+  private StreamBridge streamBridge;
+
+  @Autowired
+  private ReservationReplyTracker replyTracker;
 
   public ReservationService(ReservationRepository reservationRepository,
       RestTemplate restTemplate) {
@@ -55,13 +64,13 @@ public class ReservationService {
     }
   }
 
+
   /**
    * Business Rule 1: Auto-cancel pending reservations after 1 hour Business Rule 2: Validate
    * booking window (11:00–22:00) Done Business Rule 3: Must be at least 30 minutes in the future
    * Done Business Rule 4: Party size must not exceed table capacity (≤ 6) Done Business Rule 5: No
    * overlapping reservations by same customer within an hour
    */
-
 
   public ReservationResponse createReservation(ReservationRequestDTO request) {
     ZoneId zone = ZoneId.of("America/Chicago");
@@ -85,8 +94,8 @@ public class ReservationService {
 
     // 📌 Business Rule 2: Validate booking window (11:00–22:00)
     LocalTime reservationLocalTime = reservationTime.toLocalTime();
-    LocalTime startTime = LocalTime.of(BOOKING_START_HOUR, 0); // 11:00
-    LocalTime endTime = LocalTime.of(BOOKING_END_HOUR, 0); // 22:00
+    LocalTime startTime = LocalTime.of(BOOKING_START_HOUR, 0);
+    LocalTime endTime = LocalTime.of(BOOKING_END_HOUR, 0);
 
     if (reservationLocalTime.isBefore(startTime) || reservationLocalTime.isAfter(endTime)) {
       String errMsg = String.format(
@@ -99,76 +108,47 @@ public class ReservationService {
     // 📌 Business Rule 5: No overlapping reservations by same customer within an hour
     validateBooking(request.getCustomerId(), request.getDate(), request.getTime());
 
-    // Build Table Availability Request for the remote Table Microservice
-    TableAvailabilityRequest availabilityRequest = new TableAvailabilityRequest();
-    availabilityRequest.setCustomerId(request.getCustomerId());
-    availabilityRequest.setDate(request.getDate().toString());
-    availabilityRequest.setTime(request.getTime().toString());
-    availabilityRequest.setPartySize(request.getPartySize());
+    // Build and save local DB entity
+    RestaurantTableEntity reservation = new RestaurantTableEntity(request.getCustomerId(),
+        request.getTime(), request.getDate(), request.getPartySize());
 
-    logger.info("Sending availability check payload via HTTP: \n{}", availabilityRequest);
+    RestaurantTableEntity savedReservationObj = reservationRepository.save(reservation);
+    logger.info("Successfully Saved Reservation Local ID: {}, Customer ID: {}",
+        savedReservationObj.getId(), reservation.getCustomerId());
 
-    // // Call Table Service via RestTemplate HTTP POST (Synchronous verification)
-    // ResponseEntity<ReservationResponse> response =
-    // restTemplate.postForEntity("http://localhost:1987/api/tables/availability",
-    // availabilityRequest, ReservationResponse.class);
-    //
-    // ReservationResponse res = response.getBody();
-    // HttpStatusCode statusCode = response.getStatusCode();
-    // RestaurantTableEntity savedReservationObj = null;
-    //
-    // if (statusCode.is2xxSuccessful() && res != null) {
-    // // Build and save local DB entity
-    // RestaurantTableEntity reservation = new RestaurantTableEntity(request.getCustomerId(),
-    // request.getTime(), request.getDate(), request.getPartySize());
-    //
-    // savedReservationObj = reservationRepository.save(reservation);
-    // logger.info("Successfully Saved Reservation Local ID: {}, Customer ID: {}",
-    // savedReservationObj.getId(), reservation.getCustomerId());
-    // } else {
-    // logger.error("Failed to process table assignment. HTTP Status Code: {}", statusCode.value());
-    // throw new RuntimeException("Table Service table assignment failed.");
-    // }
-    //
-    // if (res.getId() == null) {
-    // throw new RuntimeException(
-    // "Table Service returned a successful response, but the Reservation ID is missing.");
-    // }
+    // 2. Unique ID to correlate the async reply back to this specific HTTP request
+    String correlationId = UUID.randomUUID().toString();
+    logger.debug("Generated correlationId: {}", correlationId);
 
-    // Long reservid = savedReservationObj.getId();
-    // ReservationStatus status = savedReservationObj.getStatus();
+    // 3. Create the DeferredResult — 5 second timeout before giving up
+    DeferredResult<ResponseEntity<EntityModel<ReservationResponse>>> deferredResult =
+        new DeferredResult<>(5000L);
 
-    ////    // Create the final response object utilizing the matching constructor fields
-    // ReservationResponse finalResponse = new ReservationResponse(reservid, status.name(),
-    // res.getExpiresAt(), request.getPartySize());
+    // If no reply arrives within 5s, respond with 504 instead of hanging forever
+    deferredResult.onTimeout(() -> {
+      logger.warn("Reservation processing timed out for correlationId: {}", correlationId);
+      deferredResult.setErrorResult(ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+          .body("Reservation processing timed out."));
+    });
 
-    ReservationResponse reservationResponseponse = null;
-    // 🚀 Publish an Asynchronous Event to RabbitMQ (Fire-and-forget)
-    try {
-      // = "order.exchange", "order.created"
-      logger.info("Publishing reservation event to RabbitMQ for Order Queue...");
-      reservationResponseponse =
-          (ReservationResponse) rabbitTemplate.convertSendAndReceive(RabbitConfig.EXCHANGE_NAME, // "order.exchange"
-              RabbitConfig.ROUTING_KEY, // "order.created"
-              availabilityRequest, message -> {
-                // 📌 Add custom header to differentiate the request type
-                message.getMessageProperties().setHeader("request-type", "table-booking");
-                return message;
-              });
-      logger.info("Successfully sent message event payload to RabbitMQ exchange: {}",
-          RabbitConfig.EXCHANGE_NAME);
-      if (reservationResponseponse != null) {
-        logger.info(" [SENDER] Got reply back! Status: " + reservationResponseponse.toString());
-      } else {
-        logger.info(" [SENDER] Request timed out!");
-      }
-    } catch (Exception amqpEx) {
-      // Keeps primary data transaction intact if messaging middleware loses connectivity
-      logger.error("Database transaction succeeded but RabbitMQ transmission failed!", amqpEx);
-    }
-    String status = reservationResponseponse.getStatus();
-    return new ReservationResponse(status, reservationResponseponse.getExpiresAt(),
-        reservationResponseponse.getSize());
+    // Register this correlationId + deferredResult pair so the async
+    // Consumer<Message<ReservationResponse>> bean can resolve it later
+    replyTracker.register(correlationId, deferredResult);
+    logger.debug("Registered deferredResult in replyTracker for correlationId: {}", correlationId);
+
+    // 4. Build the outgoing message with the correlationId as a header,
+    // so the table-service can copy it back onto its reply
+    Message<ReservationRequestDTO> message =
+        MessageBuilder.withPayload(request).setHeader("correlationId", correlationId).build();
+
+    logger.info("Publishing reservation request to 'brief-request-out-0' with correlationId: {}",
+        correlationId);
+    streamBridge.send("reservation-request-out-0", message);
+
+    // Return a PENDING response — the controller will send the async request
+    // via StreamBridge and update the client once the reply arrives.
+    return new ReservationResponse(savedReservationObj.getId(), "PENDING", null,
+        request.getPartySize());
   }
 
 

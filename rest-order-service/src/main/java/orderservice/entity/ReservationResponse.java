@@ -3,23 +3,21 @@ package orderservice.entity;
 import java.time.LocalDateTime;
 import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReservationResponse extends RepresentationModel<ReservationResponse> {
 
   @JsonProperty("id")
   @JsonAlias({"Id", "ID"})
   private Long id;
 
-  @JsonProperty("expiresAt")
+
   private LocalDateTime expiresAt;
 
-  @JsonProperty("status")
+
   private String status;
 
-  @JsonProperty("size")
+
   private int size;
 
   public ReservationResponse() {}

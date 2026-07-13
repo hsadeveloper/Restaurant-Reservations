@@ -1,17 +1,12 @@
 package tableservice.api;
 
 import java.time.LocalDateTime;
+import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-    getterVisibility = JsonAutoDetect.Visibility.NONE,
-    setterVisibility = JsonAutoDetect.Visibility.NONE,
-    isGetterVisibility = JsonAutoDetect.Visibility.NONE)
-public class ReservationResponse {
+
+public class ReservationResponse extends RepresentationModel<ReservationResponse> {
 
   // FIX: Instructs Jackson to look strictly for lowercase "id" from the JSON packet
   @JsonProperty("id")

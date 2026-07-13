@@ -11,7 +11,6 @@ import tableservice.adapter.out.persistence.TableAvailability;
 import tableservice.api.ReservationResponse;
 import tableservice.api.TableAvailabilityRequest;
 import tableservice.api.TableDefinitionDTO;
-import tableservice.domain.ReservationStatus;
 
 @Component
 public class TableDefinitionService {
@@ -91,11 +90,14 @@ public class TableDefinitionService {
 
     List<TableAvailability> availableTables = availRepositoryPort.findBestFitCapacity(partySize);
 
+    logger.info("findBestFitCapacity ------{}" + availableTables.toString());
+
     if (availableTables.isEmpty()) {
       throw new IllegalArgumentException("No available table found for a party of " + partySize);
     }
 
     TableAvailability matchedTable = availableTables.get(0);
+
     matchedTable.setReservationTime(time);
     matchedTable.setStatus(ReservationStatus.PENDING);
     matchedTable.setCustomerId(customerId);

@@ -27,11 +27,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.springframework.amqp:spring-rabbit-stream'
-    
+
+implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit' 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     
-    
+     implementation 'org.springframework.cloud:spring-cloud-stream'
      implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     
      implementation 'org.springframework.boot:spring-boot-starter-json'
@@ -49,6 +49,10 @@ dependencies {
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
 }
 
 dependencyManagement {

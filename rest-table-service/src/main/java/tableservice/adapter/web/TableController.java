@@ -6,15 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tableservice.AvailabilityRepositoryPort;
 import tableservice.TableDefinitionService;
 import tableservice.api.ReservationResponse;
-import tableservice.api.TableAvailabilityRequest;
 import tableservice.api.TableDefinitionDTO;
 
 @RestController
@@ -53,12 +50,13 @@ public class TableController {
     return ResponseEntity.ok(available);
   }
 
-  @PostMapping("/availability")
-  public ReservationResponse checkAvailability(@RequestBody TableAvailabilityRequest request) {
-    logger.info("/api/tables/availability --- > Get availability and create a pending reservation");
-    return tableService.checkAvailability(request);
-
-  }
+  // @PostMapping("/availability")
+  // public ReservationResponse checkAvailability(@RequestBody TableAvailabilityRequest request) {
+  // logger.info("/api/tables/availability --- > Get availability and create a pending
+  // reservation");
+  // return tableService.checkAvailability(request);
+  //
+  // }
 
 
 
