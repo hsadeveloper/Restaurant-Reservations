@@ -66,7 +66,7 @@ public class ReservationController {
   public ResponseEntity<ReservationRequestDTO[]> getLatestAvailableTables() {
     try {
       // 1. Fetch the synced JSON block created by your TableSubscriber
-      String jsonPayload = stringRedisTemplate.opsForValue().get("availableTables::latest");
+      String jsonPayload = stringRedisTemplate.opsForValue().get("tables:all-available");
 
       if (jsonPayload == null) {
         // If the 15-minute TTL cache window expired, return an empty array
