@@ -146,7 +146,8 @@ public class ReservationController {
       @PathVariable("id") Long id) {
 
     ReservationResponse response = reservationService.confirm(id);
-    streamBridge.send("brief-request-out-0", "1");
+    LOGGER.info("Sending to table-confirmation-exchange ");
+    streamBridge.send("table-confirmation-exchange", id);
     EntityModel<ReservationResponse> model = EntityModel.of(response,
         linkTo(methodOn(ReservationController.class).confirmReservation(id)).withRel("confirm"));
     return ResponseEntity.ok(model);

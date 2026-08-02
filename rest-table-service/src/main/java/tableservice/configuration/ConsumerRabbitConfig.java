@@ -26,11 +26,29 @@ class ConsumerRabbitConfig {
   public ConsumerRabbitConfig(TableDefinitionService tableDefinitionService) {
     this.tableDefinitionService = tableDefinitionService;
   }
+
+  @Bean
+  public Function<Message<Long>, Message<ReservationResponse>> confirmTable() {
+    return requestMessage -> {
+      logger.info("Processing confirmTable ..........", requestMessage.getPayload());
+      Long tableId = requestMessage.getPayload();
+      tableDefinitionService.confirmTable(tableId);
+
+      ReservationResponse response = new ReservationResponse();
+
+      return MessageBuilder.withPayload(response).copyHeaders(requestMessage.getHeaders()).build();
+    };
+  }
+
+
+
   /*
    * For processCreationRequest-in-0 to mean anything, you need a @Bean method literally named
    * processCreationRequest (a Function or Consumer) — Spring Cloud Stream derives the -in-0/-out-0
    * suffixes automatically from the bean's method name.
    */
+
+
 
   @Bean
   public Function<Message<ReservationRequest>, Message<ReservationResponse>> processCreationRequest() {

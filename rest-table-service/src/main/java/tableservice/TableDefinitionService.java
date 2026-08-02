@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import jakarta.transaction.Transactional;
 import tableservice.adapter.out.persistence.TableAvailability;
 import tableservice.api.ReservationResponse;
 import tableservice.api.TableAvailabilityRequest;
@@ -27,6 +28,15 @@ public class TableDefinitionService {
       AvailabilityRepositoryPort availRepositoryPort) {
     this.repositoryPort = repositoryPort;
     this.availRepositoryPort = availRepositoryPort;
+  }
+
+  @Transactional
+  public List<TableDefinitionDTO> confirmTable(Long Id) {
+    TableAvailability table = availRepositoryPort.confirm(Id);
+    table.setStatus(ReservationStatus.CONFIRMED);
+    availRepositoryPort.save(table);
+    return null;
+
   }
 
   public List<TableDefinitionDTO> findAll() {

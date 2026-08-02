@@ -107,6 +107,12 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
     return jpaAvailabilityRepository.findByStatusAndCreatedAtBefore(status, time);
   }
 
+  @Override
+  public TableAvailability confirm(Long id) {
+
+    return jpaAvailabilityRepository.getById(id);
+  }
+
 
 
 }

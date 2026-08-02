@@ -27,4 +27,6 @@ public interface JpaAvailabilityRepository extends JpaRepository<TableAvailabili
   List<TableAvailability> checkAvailability();
 
 
+  TableAvailability getReferenceById(Long id);
+
 }

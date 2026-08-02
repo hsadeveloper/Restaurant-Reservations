@@ -11,6 +11,8 @@ public interface AvailabilityRepositoryPort {
 
   TableAvailability save(TableAvailability table);
 
+  TableAvailability confirm(Long id);
+
   List<TableAvailability> findBestFitCapacity(int size);
 
   List<ReservationResponse> checkAvailability();
