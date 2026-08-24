@@ -1,5 +1,4 @@
-version: '3.8'
-
+version: '3.8' 
 services:
   rabbitmq:
     image: rabbitmq:4-management
@@ -15,19 +14,8 @@ services:
     networks:
       - app-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis-cental
-    ports:
-      - "6379:6379"   # Standard Redis port
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-
 volumes:
   rabbitmq_data:
-  redis_data:
 
 networks:
   app-network:

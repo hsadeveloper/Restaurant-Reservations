@@ -13,7 +13,7 @@ public interface AvailabilityRepositoryPort {
 
   TableAvailability confirm(Long id);
 
-  List<TableAvailability> findBestFitCapacity(int size);
+  List<TableAvailability> findAvailable();
 
   List<ReservationResponse> checkAvailability();
 

@@ -10,15 +10,10 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
   @JsonProperty("id")
   @JsonAlias({"Id", "ID"})
   private Long id;
-
-
   private LocalDateTime expiresAt;
-
-
   private String status;
-
-
   private int size;
+  private Long tableId;
 
   public ReservationResponse() {}
 
@@ -31,6 +26,16 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
     this.size = size;
   }
 
+  public ReservationResponse(Long id, LocalDateTime expiresAt, String status, int size,
+      Long tableId) {
+    super();
+    this.id = id;
+    this.expiresAt = expiresAt;
+    this.status = status;
+    this.size = size;
+    this.tableId = tableId;
+  }
+
 
 
   public ReservationResponse(Long id, String status, LocalDateTime expiresAt, int size) {
@@ -38,6 +43,14 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
     this.status = status;
     this.expiresAt = expiresAt;
     this.size = size;
+  }
+
+  public Long getTableId() {
+    return tableId;
+  }
+
+  public void setTableId(Long tableId) {
+    this.tableId = tableId;
   }
 
   public Long getId() {

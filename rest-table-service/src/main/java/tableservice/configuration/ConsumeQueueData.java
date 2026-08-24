@@ -3,28 +3,28 @@ package tableservice.configuration;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import tableservice.ReservationStatus;
 import tableservice.TableDefinitionService;
 import tableservice.api.ReservationRequest;
 import tableservice.api.ReservationResponse;
 import tableservice.api.TableAvailabilityRequest;
 
 @Component
-class ConsumerRabbitConfig {
+class ConsumeQueueData {
 
-
-  private static final Logger logger = LoggerFactory.getLogger(ConsumerRabbitConfig.class);
-
-  // 1. Declare the Service dependency
+  private static final Logger logger = LoggerFactory.getLogger(ConsumeQueueData.class);
   private final TableDefinitionService tableDefinitionService;
+  private StreamBridge streamBridge;
 
-  // 2. Inject the Service via Constructor Injection
-  public ConsumerRabbitConfig(TableDefinitionService tableDefinitionService) {
+  public ConsumeQueueData(TableDefinitionService tableDefinitionService,
+      StreamBridge streamBridge) {
+    super();
     this.tableDefinitionService = tableDefinitionService;
+    this.streamBridge = streamBridge;
   }
 
   @Bean
@@ -33,60 +33,48 @@ class ConsumerRabbitConfig {
       logger.info("Processing confirmTable ..........", requestMessage.getPayload());
       Long tableId = requestMessage.getPayload();
       tableDefinitionService.confirmTable(tableId);
-
       ReservationResponse response = new ReservationResponse();
-
       return MessageBuilder.withPayload(response).copyHeaders(requestMessage.getHeaders()).build();
     };
   }
 
-
-
-  /*
-   * For processCreationRequest-in-0 to mean anything, you need a @Bean method literally named
-   * processCreationRequest (a Function or Consumer) — Spring Cloud Stream derives the -in-0/-out-0
-   * suffixes automatically from the bean's method name.
-   */
-
-
-
   @Bean
   public Function<Message<ReservationRequest>, Message<ReservationResponse>> processCreationRequest() {
     return requestMessage -> {
-      // 1. Extract the typed payload directly (Spring handles JSON conversion automatically)
+      logger.info("Processing processCreationRequest ..........");
       ReservationRequest requestPayload = requestMessage.getPayload();
 
       try {
-        logger.info("Processing processCreationRequest ..........", requestPayload.toString());
+        logger.info("Processing processCreationRequest .......... {}", requestPayload);
 
-        // 2. Map incoming fields from Event DTO to Service Request format
-        TableAvailabilityRequest availabilityRequest =
-            new TableAvailabilityRequest(requestPayload.getCustomerId(), requestPayload.getDate(),
-                requestPayload.getTime(), requestPayload.getPartySize());
+        TableAvailabilityRequest availabilityRequest = new TableAvailabilityRequest(
+            requestPayload.getDate(), requestPayload.getTime(), requestPayload.getPartySize(),
+            requestPayload.getCustomerId(), requestPayload.getTableId());
 
-        // 3. Process availability (Insert your internal service logic here)
-        ReservationResponse responsePayload = new ReservationResponse();
-        responsePayload.setStatus(ReservationStatus.PENDING.toString());
-        responsePayload.setSize(availabilityRequest.getPartySize());
+        // Map the reservationId so checkAvailability() can include it in the response
+        availabilityRequest.setReservationId(requestPayload.getReservationId());
+
         ReservationResponse response =
             tableDefinitionService.checkAvailability(availabilityRequest);
+        logger.info("Processing processCreationRequest succeeded .......... Table ID: {}",
+            response.getTableId());
 
-        // 4. CRITICAL: Copy standard and routing headers (replyTo & correlationId) back into
-        // response
         return MessageBuilder.withPayload(response).copyHeaders(requestMessage.getHeaders())
             .build();
 
-      } catch (Exception e) {
-        logger.error(" [❌] Error processing reservation check availability for ID: {}",
-            requestPayload.toString(), e);
-
-        // 5. Build an error payload matching the expected functional output type
+      } catch (IllegalArgumentException e) {
+        logger.warn(" [⚠️] Reservation rejected for request: {} — {}", requestPayload,
+            e.getMessage());
         ReservationResponse errorResponse = new ReservationResponse();
         errorResponse.setStatus("REJECTED");
-
         return MessageBuilder.withPayload(errorResponse).copyHeaders(requestMessage.getHeaders())
             .build();
+      } catch (Exception e) {
+        logger.error(" [❌] Unexpected error processing reservation for request: {}", requestPayload,
+            e);
+        throw e;
       }
     };
   }
+
 }

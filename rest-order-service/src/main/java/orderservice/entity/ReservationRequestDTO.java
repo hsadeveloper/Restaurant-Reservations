@@ -2,26 +2,60 @@ package orderservice.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReservationRequestDTO {
 
+  private Long reservationId;
   private LocalDate date;
-
-
   private LocalTime time;
   private int partySize;
   private String customerId;
+
+  @JsonProperty("tableId")
+  @JsonAlias({"table_id", "tableId"})
+  private Long tableId;
 
   public ReservationRequestDTO() {
     super();
   }
 
-  public ReservationRequestDTO(LocalDate date, LocalTime time, int partySize, String customerId) {
+  public ReservationRequestDTO(LocalDate date, LocalTime time, int partySize, String customerId,
+      Long tableId) {
     super();
     this.date = date;
     this.time = time;
     this.partySize = partySize;
     this.customerId = customerId;
+    this.tableId = tableId;
+  }
+
+  public ReservationRequestDTO(Long reservationId, LocalDate date, LocalTime time, int partySize,
+      String customerId, Long tableId) {
+    super();
+    this.reservationId = reservationId;
+    this.date = date;
+    this.time = time;
+    this.partySize = partySize;
+    this.customerId = customerId;
+    this.tableId = tableId;
+  }
+
+  public Long getReservationId() {
+    return reservationId;
+  }
+
+  public void setReservationId(Long reservationId) {
+    this.reservationId = reservationId;
+  }
+
+  public Long getTableId() {
+    return tableId;
+  }
+
+  public void setTableId(Long tableId) {
+    this.tableId = tableId;
   }
 
   public LocalDate getDate() {
@@ -58,10 +92,8 @@ public class ReservationRequestDTO {
 
   @Override
   public String toString() {
-    return "CreateReservationRequest [date=" + date + ", time=" + time + ", partySize=" + partySize
-        + ", customerId=" + customerId + "]";
+    return "ReservationRequestDTO [reservationId=" + reservationId + ", date=" + date + ", time="
+        + time + ", partySize=" + partySize + ", customerId=" + customerId + ", tableId=" + tableId
+        + "]";
   }
-
-
-
 }

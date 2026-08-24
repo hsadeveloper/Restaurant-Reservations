@@ -19,10 +19,8 @@ import tableservice.api.TableDefinitionDTO;
 public class TableController {
 
   private static final Logger logger = LoggerFactory.getLogger(TableController.class);
-
   private final TableDefinitionService tableService;
   private final AvailabilityRepositoryPort availRepositoryPort;
-
 
   public TableController(TableDefinitionService tableService,
       AvailabilityRepositoryPort availRepositoryPort) {
@@ -30,12 +28,10 @@ public class TableController {
     this.availRepositoryPort = availRepositoryPort;
   }
 
-
   @GetMapping("/all")
   public List<TableDefinitionDTO> getAll() {
     return tableService.findAll();
   }
-
 
   @GetMapping("/size")
   public List<TableDefinitionDTO> getBySize(@RequestParam("size") int size) {

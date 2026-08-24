@@ -20,8 +20,6 @@ public class RestaurantTable {
     super();
   }
 
-
-
   public RestaurantTable(Long id, ReservationStatus status, LocalDateTime expiresAt,
       Integer tableNumber, String customerId, int capacity) {
     super();
@@ -33,7 +31,6 @@ public class RestaurantTable {
     this.capacity = capacity;
   }
 
-
   public RestaurantTable(String customerId, int capacity, ReservationStatus status,
       LocalDate reservationDate, LocalTime reservationTime) {
     super();
@@ -43,8 +40,6 @@ public class RestaurantTable {
     this.reservationDate = reservationDate;
     this.reservationTime = reservationTime;
   }
-
-
 
   public RestaurantTable(Long id, ReservationStatus status, String customerId, int capacity) {
     super();

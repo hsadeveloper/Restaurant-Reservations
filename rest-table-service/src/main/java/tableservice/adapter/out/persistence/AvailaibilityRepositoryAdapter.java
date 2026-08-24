@@ -13,20 +13,13 @@ import tableservice.ReservationStatus;
 import tableservice.adapter.web.JpaAvailabilityRepository;
 import tableservice.api.ReservationResponse;
 
-
-
 @Component
 public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPort {
-
-
 
   private static final Logger logger =
       LoggerFactory.getLogger(AvailaibilityRepositoryAdapter.class);
 
-
-
   private final JpaAvailabilityRepository jpaAvailabilityRepository;
-
 
   public AvailaibilityRepositoryAdapter(JpaAvailabilityRepository jpaAvailabilityRepository) {
     this.jpaAvailabilityRepository = jpaAvailabilityRepository;
@@ -38,22 +31,11 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
 
   @Override
   public List<ReservationResponse> findByStatus() {
-
     logger.info("inside JpaAvailabilityRepository --->");
-    List<TableAvailability> tables = jpaAvailabilityRepository.findByStatusAndSize(4);
-
+    List<TableAvailability> tables = jpaAvailabilityRepository.findAvailable();
     logger.info("inside JpaAvailabilityRepository ---> " + tables);
-
     return tables.stream().map(e -> new ReservationResponse(e.getId(), e.getStatus().name()))
         .toList();
-
-  }
-
-  @Override
-  public List<TableAvailability> findBestFitCapacity(int size) {
-
-    return jpaAvailabilityRepository.findByStatusAndSize(size);
-
   }
 
   @Override
@@ -81,24 +63,18 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
       dto.setId(entity.getId());
       dto.setStatus(entity.getStatus().name());
       dto.setSize(entity.getCapacity());
-
       LocalDate reservationDate = entity.getReservationDate();
       LocalTime reservationTime = entity.getReservationTime();
-
       if (reservationDate != null && reservationTime != null) {
         LocalDateTime combinedDateTime = LocalDateTime.of(reservationDate, reservationTime);
         dto.setExpiresAt(combinedDateTime);
       } else {
         dto.setExpiresAt(null);
       }
-
       responses.add(dto);
     }
-
     return responses;
   }
-
-
 
   @Override
   public List<TableAvailability> findByStatusAndCreatedAtBefore(ReservationStatus status,
@@ -109,10 +85,11 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
 
   @Override
   public TableAvailability confirm(Long id) {
-
     return jpaAvailabilityRepository.getById(id);
   }
 
-
-
+  @Override
+  public List<TableAvailability> findAvailable() {
+    return jpaAvailabilityRepository.findAvailable();
+  }
 }

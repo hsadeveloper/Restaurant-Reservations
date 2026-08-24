@@ -8,6 +8,10 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: restaurants
+      POSTGRES_DB: front
+    networks:
+      - app-network
 
-  
+networks:
+  app-network:
+    driver: bridge

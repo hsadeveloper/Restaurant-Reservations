@@ -53,33 +53,15 @@ class ReservationAutoCancelScheduler {
     }
   }
 
-
-  // @Scheduled(fixedRate = 30 * 60 * 1000)
-  // void pullAvailableTable() {
-  //
-  // try {
-  // List<ReservationResponse> tables = availaibilityRepositoryAdapter.checkAvailability();
-  //
-  // String json = this.objectMapper.writeValueAsString(tables);
-  // redisTemplate.opsForValue().set("cached-available-tables", json);
-  //
-  // } catch (Exception e) {
-  // logger.error("Failed to publish to Redis", e);
-  // }
-  // }
-
-
   @Scheduled(fixedRate = 15 * 60 * 1000)
   void cancelPendingReservations() {
     LocalDateTime cutoff = LocalDateTime.now().minusHours(1);
 
     List<TableAvailability> pendingReservations = availaibilityRepositoryAdapter
         .findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, cutoff);
-
     logger.info(
         ">>> SCHEDULER TRIGGERED <<<" + "Process: Reservation Status Check\n" + "Time: {}\n",
         LocalDateTime.now(java.time.ZoneOffset.UTC));
-
     for (TableAvailability reservation : pendingReservations) {
       reservation.setStatus(ReservationStatus.CANCELED);
       availaibilityRepositoryAdapter.save(reservation);
