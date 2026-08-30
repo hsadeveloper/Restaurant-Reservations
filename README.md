@@ -1,3 +1,5 @@
+spring.cloud.stream.bindings.<bindingName>.<property>=<value>. The <bindingName>
+
 spring.cloud.stream.bindings.<binding name>.destination=myExchange
 
 spring.cloud.stream.bindings.<binding name>.group=myQueue
