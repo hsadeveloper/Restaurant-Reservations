@@ -162,7 +162,7 @@ public class ReservationService {
   }
 
   public ReservationResponse confirm(Long id) {
-    RestaurantTableEntity reservation = reservationRepository.findById(id)
+    RestaurantTableEntity reservation = reservationRepository.findByTableId(id)
         .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
     if (reservation.getStatus() != ReservationStatus.PENDING) {
@@ -175,8 +175,36 @@ public class ReservationService {
 
     ReservationResponse response = new ReservationResponse();
     response.setId(savedReservation.getId());
+    response.setTableId(savedReservation.getTableId()); // <-- was missing
     response.setExpiresAt(savedReservation.getUpdatedAt());
     response.setStatus(savedReservation.getStatus().name());
+
+    boolean sent = streamBridge.send("confirmReservation-out-0", response); // <-- send response,
+                                                                            // not savedReservation
+
+    if (!sent) {
+      throw new IllegalStateException("Could not send reservation confirmation message");
+    }
+
     return response;
   }
+
+  @Bean
+  public Consumer<Message<ReservationResponse>> confirmReservation(
+      ReservationService reservationService) {
+    return message -> {
+      ReservationResponse response = message.getPayload();
+
+      logger.info("Received reservation confirmation for ID: {}, status: {}", response.getId(),
+          response.getStatus());
+
+      if (response.getId() != null) {
+        // Execute local status update
+        logger.warn("response.getId() Not null ID");
+      } else {
+        logger.warn("Received reservation response with null ID");
+      }
+    };
+  }
+
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import orderservice.entity.ReservationStatus;
 import orderservice.entity.RestaurantTableEntity;
@@ -13,9 +14,10 @@ public interface ReservationRepository extends JpaRepository<RestaurantTableEnti
   List<RestaurantTableEntity> findAllByStatusAndCreatedAtBefore(ReservationStatus status,
       LocalDateTime time);
 
+  Optional<RestaurantTableEntity> findByTableId(Long id);
+
   boolean existsByCustomerIdAndReservationTimeBetween(String customerId, LocalDateTime start,
       LocalDateTime end);
-
 
   RestaurantTableEntity save(RestaurantTableEntity reservation);
 

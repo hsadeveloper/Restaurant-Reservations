@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import jakarta.persistence.EntityNotFoundException;
 import tableservice.AvailabilityRepositoryPort;
 import tableservice.ReservationStatus;
 import tableservice.adapter.web.JpaAvailabilityRepository;
@@ -85,7 +86,10 @@ public class AvailaibilityRepositoryAdapter implements AvailabilityRepositoryPor
 
   @Override
   public TableAvailability confirm(Long id) {
-    return jpaAvailabilityRepository.getById(id);
+
+    logger.info("confirm AvailaibilityRepositoryAdapter{}", id);
+    return jpaAvailabilityRepository.findById(id).orElseThrow(
+        () -> new EntityNotFoundException("Table availability not found for id: " + id));
   }
 
   @Override

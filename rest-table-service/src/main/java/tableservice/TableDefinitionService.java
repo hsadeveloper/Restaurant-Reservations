@@ -29,11 +29,12 @@ public class TableDefinitionService {
     this.availRepositoryPort = availRepositoryPort;
   }
 
-  public List<TableDefinitionDTO> confirmTable(Long Id) {
+  public void confirmTable(Long Id) {
+    logger.info("TableDefinitionService -confirmTable - " + Id);
     TableAvailability table = availRepositoryPort.confirm(Id);
     table.setStatus(ReservationStatus.CONFIRMED);
     availRepositoryPort.save(table);
-    return null;
+    return;
   }
 
   public List<TableDefinitionDTO> findAll() {

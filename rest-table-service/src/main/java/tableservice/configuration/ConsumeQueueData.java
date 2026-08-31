@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MimeTypeUtils;
 import tableservice.TableDefinitionService;
 import tableservice.api.ReservationRequest;
 import tableservice.api.ReservationResponse;
@@ -28,13 +30,17 @@ class ConsumeQueueData {
   }
 
   @Bean
-  public Function<Message<Long>, Message<ReservationResponse>> confirmTable() {
+  public Function<Message<ReservationResponse>, Message<ReservationResponse>> confirmTable(
+      TableDefinitionService tableDefinitionService) {
     return requestMessage -> {
-      logger.info("Processing confirmTable ..........", requestMessage.getPayload());
-      Long tableId = requestMessage.getPayload();
-      tableDefinitionService.confirmTable(tableId);
+      ReservationResponse reservation = requestMessage.getPayload();
+      logger.info("Processing confirmTable for reservationId={}", reservation.toString());
+      tableDefinitionService.confirmTable(reservation.getTableId());
       ReservationResponse response = new ReservationResponse();
-      return MessageBuilder.withPayload(response).copyHeaders(requestMessage.getHeaders()).build();
+      response.setId(reservation.getTableId());
+      response.setStatus("CONFIRMED");
+      return MessageBuilder.withPayload(response).copyHeaders(requestMessage.getHeaders())
+          .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON_VALUE).build();
     };
   }
 

@@ -67,16 +67,18 @@ public class ReservationController {
     return reservationService.createReservation(request);
   }
 
-  @PostMapping("/{id}/confirm")
-  public ResponseEntity<EntityModel<ReservationResponse>> confirmReservation(
-      @PathVariable("id") Long id) {
-
+  @PostMapping("/confirm/{id}")
+  public ResponseEntity<ReservationResponse> confirmReservation(@PathVariable("id") Long id) {
     ReservationResponse response = reservationService.confirm(id);
-    LOGGER.info("Sending to table-confirmation-exchange ");
-    streamBridge.send("table-confirmation-exchange", id);
-    EntityModel<ReservationResponse> model = EntityModel.of(response,
-        linkTo(methodOn(ReservationController.class).confirmReservation(id)).withRel("confirm"));
-    return ResponseEntity.ok(model);
+
+    // Send payload through StreamBridge to the correct outbound binding
+    boolean sent = streamBridge.send("confirmReservation-out-0", response);
+
+    if (!sent) {
+      throw new IllegalStateException("Failed to publish confirmation request to broker");
+    }
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/all")
