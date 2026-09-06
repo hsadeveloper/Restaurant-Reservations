@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,33 +22,43 @@ class ReservationAutoCancelScheduler {
   private final AvailaibilityRepositoryAdapter availaibilityRepositoryAdapter;
   private final ObjectMapper objectMapper;
 
-  @Autowired
   private StreamBridge streamBridge;
 
-
-  // Spring 4.3+ automatically wires single-constructor components, @Autowired is optional here
   public ReservationAutoCancelScheduler(
-      AvailaibilityRepositoryAdapter availaibilityRepositoryAdapter, ObjectMapper objectMapper) {
+      AvailaibilityRepositoryAdapter availaibilityRepositoryAdapter, ObjectMapper objectMapper,
+      StreamBridge streamBridge) {
+    super();
     this.availaibilityRepositoryAdapter = availaibilityRepositoryAdapter;
     this.objectMapper = objectMapper;
+    this.streamBridge = streamBridge;
   }
 
-
   // 1800000ms = 30 minutes (Your comment said 3 minutes, 3 mins would be 3 * 60 * 1000 = 180000)
-  @Scheduled(fixedRate = 10 * 60 * 1000)
+  @Scheduled(fixedRate = 3 * 60 * 1000)
   public void pollTableAvailability() {
+
     try {
+
       List<ReservationResponse> tables = availaibilityRepositoryAdapter.checkAvailability();
 
-      logger.info(
-          ">>> SCHEDULER TRIGGERED <<<" + "Process: Polling Available table \n" + "Time: {}\n");
+      logger.info(">>> SCHEDULER TRIGGERED <<< Process: Polling Available Table | Time: {}",
+          LocalDateTime.now());
 
-      // TARGET THE EXACT EXCHANGE NAME IN STREAMBRIDGE DIRECTLY
-      streamBridge.send("table-available-exchange", tables);
+      logger.info("Found {} available tables to publish", tables.size());
 
-      logger.info("Successfully send  avilable tables through ..............", tables.size());
+      boolean sent = streamBridge.send("pollavailTables-out-0", tables);
+
+      logger.info("StreamBridge send result = {} | Number of tables = {}", sent, tables.size());
+
+      if (!sent) {
+        logger.error("FAILED to publish available tables");
+      } else {
+        logger.info("Successfully published available tables");
+      }
+
     } catch (Exception e) {
-      logger.error("Failed to publishsed ..................", e);
+
+      logger.error("Failed to publish available tables", e);
     }
   }
 

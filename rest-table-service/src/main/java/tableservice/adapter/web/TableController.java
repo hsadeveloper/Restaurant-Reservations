@@ -45,15 +45,4 @@ public class TableController {
     List<ReservationResponse> available = tableService.findTableByStatus();
     return ResponseEntity.ok(available);
   }
-
-  // @PostMapping("/availability")
-  // public ReservationResponse checkAvailability(@RequestBody TableAvailabilityRequest request) {
-  // logger.info("/api/tables/availability --- > Get availability and create a pending
-  // reservation");
-  // return tableService.checkAvailability(request);
-  //
-  // }
-
-
-
 }

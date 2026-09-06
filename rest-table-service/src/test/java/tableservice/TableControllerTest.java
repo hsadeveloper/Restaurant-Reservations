@@ -13,7 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import tableservice.adapter.web.TableController;
 import tableservice.api.ReservationResponse;
 import tableservice.api.TableAvailabilityRequest;
@@ -25,7 +25,7 @@ class TableControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  // ✅ create manually instead of autowiring
+
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @MockitoBean

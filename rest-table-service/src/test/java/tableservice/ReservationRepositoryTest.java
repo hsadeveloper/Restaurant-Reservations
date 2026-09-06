@@ -25,7 +25,7 @@ import jakarta.persistence.PersistenceContext;
 import tableservice.adapter.out.persistence.TableAvailability;
 import tableservice.adapter.out.persistence.TableAvailabilityRepository;
 import tableservice.api.TableDefinitionDTO;
-import tableservice.domain.ReservationStatus;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestRestTemplate
