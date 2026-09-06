@@ -1,9 +1,9 @@
-package orderservice;
+package tableservice;
 
 import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage; // REQUIRED
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -11,17 +11,17 @@ import com.tngtech.archunit.lang.ArchRule;
 
 public class MyArchitectureTest {
 
-
   @Test
   public void layeredArchitectureIsRespected() {
     JavaClasses importedClasses = new ClassFileImporter()
 
         .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-        .withImportOption(location -> !location.contains("Test")).importPackages("orderservice");
+        .withImportOption(location -> !location.contains("Test")).importPackages("tableservice");
 
     ArchRule rule = layeredArchitecture().consideringAllDependencies().layer("controller")
-        .definedBy("..controller..").layer("service").definedBy("..service..").layer("repository")
-        .definedBy("..repository..").layer("config").definedBy("..config..")
+        .definedBy("..adapter.web..").layer("service").definedBy("..tableservice..")
+        .layer("repository").definedBy("..adapter.out.persistence..").layer("config")
+        .definedBy("..config..")
 
         .ignoreDependency(alwaysTrue(), resideInAnyPackage("..entity.."))
 
@@ -31,5 +31,6 @@ public class MyArchitectureTest {
 
     rule.check(importedClasses);
   }
+
 
 }

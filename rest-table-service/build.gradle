@@ -1,16 +1,16 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.0'
+    id 'org.springframework.boot' version '4.0.1'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.developer.com'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'Table-service'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -18,32 +18,38 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('springCloudVersion', "2025.1.2")
+}
+
 dependencies {
     // --- Application dependencies ---
-    implementation 'org.postgresql:postgresql:42.7.3'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+	   implementation 'org.postgresql:postgresql:42.7.3'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	
+	implementation 'org.springframework.boot:spring-boot-starter-json'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+	
+	testImplementation 'com.tngtech.archunit:archunit:1.4.2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:rabbitmq:1.20.3'
+	testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
+	testImplementation 'org.testcontainers:postgresql:1.20.3'
+	testImplementation 'org.testcontainers:testcontainers:1.20.3'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
+	
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 
-    // --- Optional for local development ---
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-
-    // --- Test dependencies ---
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // ✅ Add Spring Boot Testcontainers integration (for @ServiceConnection)
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-
-    // ✅ Add Testcontainers dependencies
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
-    testImplementation 'org.testcontainers:postgresql:1.20.3'
-    testImplementation 'org.testcontainers:testcontainers:1.20.3'
-
-    // Optional: fallback H2 for lightweight repo slice tests
-    testRuntimeOnly 'com.h2database:h2'
-
-    // Optional: JUnit platform launcher
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {

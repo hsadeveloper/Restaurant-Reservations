@@ -1,14 +1,14 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.0' // Adjust to your version
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.developer'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17' // or '21' depending on your setup
+    sourceCompatibility = '25'
 }
 
 repositories {
@@ -16,7 +16,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.0") // Adjust to match your Spring Boot version
+    set('springCloudVersion', "2025.1.1")
 }
 
 dependencies {
@@ -27,15 +27,31 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit' 
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    
+     implementation 'org.springframework.cloud:spring-cloud-stream'
+    
+     implementation 'org.springframework.boot:spring-boot-starter-json'
+     
+     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+     
 
+    // EXPLICIT FORCED UPGRADES TO PREVENT RUNTIME NO_CLASS_DEF_FOUND_ERRORS
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.2'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
-
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
 }
 
 dependencyManagement {

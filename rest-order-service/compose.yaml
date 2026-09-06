@@ -1,0 +1,24 @@
+services:
+  postgresql:
+    image: postgres:15
+    container_name: rest-order-postgress
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: front
+    networks:
+      - app-network
+  redis:
+      image: redis:7
+      container_name: rest-order-redis
+      restart: always
+      ports:
+        - "6379:6379"
+      networks:
+        - app-network
+networks:
+  app-network:
+    driver: bridge

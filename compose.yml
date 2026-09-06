@@ -1,0 +1,22 @@
+version: '3.8' 
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq-cental
+    ports:
+      - "5673:5672"   # Maps Mac port 5673 to Container port 5672
+      - "15673:15672" # Maps Mac port 15673 to Container port 15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  app-network:
+    driver: bridge

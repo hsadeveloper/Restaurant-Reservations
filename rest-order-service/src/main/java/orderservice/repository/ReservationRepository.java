@@ -1,21 +1,31 @@
 package orderservice.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import orderservice.entity.Reservation;
 import orderservice.entity.ReservationStatus;
-import orderservice.entity.TableAvailabilityRequest;
+import orderservice.entity.RestaurantTableEntity;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findAllByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime time);
-    boolean existsByCustomerIdAndReservationTimeBetween(String customerId, 
-            LocalDateTime start, 
-            LocalDateTime end);
-	TableAvailabilityRequest save(TableAvailabilityRequest reservation);
-    List<Reservation> findByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime time);
+public interface ReservationRepository extends JpaRepository<RestaurantTableEntity, Long> {
 
-    
+  List<RestaurantTableEntity> findAllByStatusAndCreatedAtBefore(ReservationStatus status,
+      LocalDateTime time);
+
+  Optional<RestaurantTableEntity> findByTableId(Long id);
+
+  boolean existsByCustomerIdAndReservationTimeBetween(String customerId, LocalDateTime start,
+      LocalDateTime end);
+
+  RestaurantTableEntity save(RestaurantTableEntity reservation);
+
+  List<RestaurantTableEntity> findByStatusAndCreatedAtBefore(ReservationStatus status,
+      LocalDateTime time);
+
+  boolean existsByCustomerIdAndReservationDateAndReservationTime(String customerId, LocalDate date,
+      LocalTime time);
+
+
 }

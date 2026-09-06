@@ -1,2 +1,19 @@
 rest-order-service/.DS_Store
 rest-table-service/src/main/.DS_Store
+/rest-order-service/postgres_data/base
+rest-table-service /.DS_Store
+rest-table-service /src/.DS_Store
+rest-table-service /src/main/java/.DS_Store
+rest-table-service /src/main/java/tableservice/adapter/.DS_Store
+rest-table-service /src/main/java/tableservice/.DS_Store
+/rest-order-service/postgres_data
+rest-order-service/postgres_data/pg_wal/000000010000000000000001
+rest-table-service/.DS_Store
+rest-order-service/postgres_data/postmaster.pid
+.DS_Store
+/rest-table-service/postgres_data
+/rest-order-service/postgres_data.broken
+/rest-table-service/postgres_data.broken
+.settings/
+*.log
+*.gz

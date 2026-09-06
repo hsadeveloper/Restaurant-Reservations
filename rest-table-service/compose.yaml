@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:15
+    container_name: postgress-table
+    restart: always
+    ports:
+      - "5435:5432" # Maps host machine 5435 to container 5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: backside
+
+volumes:
+  redis_data:
+    driver: local

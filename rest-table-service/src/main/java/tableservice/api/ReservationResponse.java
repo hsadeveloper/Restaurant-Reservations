@@ -1,45 +1,29 @@
-package orderservice.entity;
+package tableservice.api;
 
 import java.time.LocalDateTime;
 import org.springframework.hateoas.RepresentationModel;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class ReservationResponse extends RepresentationModel<ReservationResponse> {
 
-  @JsonProperty("id")
-  @JsonAlias({"Id", "ID"})
   private Long id;
-  private LocalDateTime expiresAt;
-  private String status;
-  private int size;
   private Long tableId;
+  private String status; // Uses String to safely parse your enum values across network lines
+  private LocalDateTime expiresAt;
+  private int size;
 
   public ReservationResponse() {}
 
-
-
-  public ReservationResponse(String status, LocalDateTime expiresAt, int size) {
-    super();
-    this.expiresAt = expiresAt;
-    this.status = status;
-    this.size = size;
-  }
-
-  public ReservationResponse(Long id, LocalDateTime expiresAt, String status, int size,
-      Long tableId) {
+  public ReservationResponse(Long id, String status) {
     super();
     this.id = id;
-    this.expiresAt = expiresAt;
     this.status = status;
-    this.size = size;
+  }
+
+  public ReservationResponse(Long tableId, String status, LocalDateTime expiresAt, int size) {
+    super();
     this.tableId = tableId;
-  }
-
-
-
-  public ReservationResponse(Long id, String status, LocalDateTime expiresAt, int size) {
-    this.id = id;
     this.status = status;
     this.expiresAt = expiresAt;
     this.size = size;
@@ -53,6 +37,8 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
     this.tableId = tableId;
   }
 
+  // Explicitly add property mapping markers over your getter and setter accessors
+  @JsonProperty("id")
   public Long getId() {
     return id;
   }
@@ -61,28 +47,29 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
     this.id = id;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
   public LocalDateTime getExpiresAt() {
     return expiresAt;
   }
+
 
   public void setExpiresAt(LocalDateTime expiresAt) {
     this.expiresAt = expiresAt;
   }
 
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
+  public void setSize(int size) {
+    this.size = size;
   }
 
   public int getSize() {
     return size;
   }
 
-  public void setSize(int size) {
-    this.size = size;
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   @Override
@@ -90,4 +77,7 @@ public class ReservationResponse extends RepresentationModel<ReservationResponse
     return "ReservationResponse [id=" + id + ", status=" + status + ", expiresAt=" + expiresAt
         + ", size=" + size + "]";
   }
+
+
+
 }
