@@ -163,8 +163,9 @@ This project uses a modern microservices stack built on **Spring Boot**. Below i
 *   **Database:** PostgreSQL (with a `shedlock` table for task coordination).
 *   **Containerization:** Docker & Docker Compose for local development.
 *   **Time Management:** All timestamps are synchronized to **UTC** to avoid timezone mismatches between the App and DB.
+  ---
 
-<img width="1086" height="1004" src="./img/stack-technology.png"/>
+<img width="800" height="700" src="./img/stack-technology.png"/>
 
 
 ---
