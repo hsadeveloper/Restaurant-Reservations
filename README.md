@@ -164,7 +164,7 @@ This project uses a modern microservices stack built on **Spring Boot**. Below i
 *   **Containerization:** Docker & Docker Compose for local development.
 *   **Time Management:** All timestamps are synchronized to **UTC** to avoid timezone mismatches between the App and DB.
 
-<img width="1086" height="1004" src="./img/stack-technology" />
+<img width="1086" height="1004" src="./img/stack-technology.png"/>
 
 
 ---
