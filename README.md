@@ -4,7 +4,9 @@
 When a customer requests a reservation (date, time, party size), Order Service asks Table Service if a table is available.
 If available, a pending reservation is created and must be confirmed within a time limit; otherwise it’s auto-canceled.
 
-<imag src="img/main-services">
+<h2>System Architecture</h2>
+
+<img src="./img/main-services.png" alt="Restaurant Reservation Microservices Architecture" width="900"/>
 
 ## 🧩 Services & Responsibilities
 
@@ -162,6 +164,10 @@ This project uses a modern microservices stack built on **Spring Boot**. Below i
 *   **Containerization:** Docker & Docker Compose for local development.
 *   **Time Management:** All timestamps are synchronized to **UTC** to avoid timezone mismatches between the App and DB.
 
+<img width="1086" height="1004" alt="Screenshot 2026-09-06 at 10 07 50 PM" src="[https://github.com/user-attachments/assets/e27abeb8-5f8f-4617-ab8f-0069f9f7a34a](https://github.com/hsadeveloper/Restaurant-Reservations/blob/rest-tableservice/img/Stack%20Technology.png" />
+
+
+---
 
 
 
